@@ -64,16 +64,14 @@ class visionDetection():
 
         s=time.time()
         if i_or_v=="image":
-            self.imgDetector = ObjectDetection()
-            self.imgDetector.setModelTypeAsYOLOv3()
-            self.imgDetector.setModelPath(os.path.join(self.execution_path, "yolo.h5"))
-            self.imgDetector.loadModel()
-
+            self.detector = ObjectDetection()
         elif i_or_v=="video":
-            self.vidDetector = VideoObjectDetection()
-            self.vidDetector.setModelTypeAsYOLOv3()
-            self.vidDetector.setModelPath(os.path.join(self.execution_path, "yolo.h5"))
-            self.vidDetector.loadModel()
+            self.detector = VideoObjectDetection()
+
+        self.detector.setModelTypeAsYOLOv3()
+        self.detector.setModelPath(os.path.join(self.execution_path, "yolo.h5"))
+        self.detector.loadModel()
+
         e=time.time()
         print(e-s)
 
@@ -128,7 +126,7 @@ class visionDetection():
     ####
     def videoDetect(self,camera,save=False):
 
-        detector = self.vidDetector
+        detector = self.detector
         if save==True:
             video_path = detector.detectObjectsFromVideo(camera_input=camera,
                                 output_file_path=os.path.join(self.execution_path, "video/Detected/camera_detected_video")
@@ -150,7 +148,7 @@ class visionDetection():
     ## outputs video with detection markings in execution_path within folder "video" in subfolder "Detected"
     ######
     def storedVideoDetect(self,videoName):
-        detector = self.vidDetector
+        detector = self.detector
 
         video_path = detector.detectObjectsFromVideo(input_file_path=os.path.join(self.execution_path, "video/Original/"+videoName),
                                         output_file_path=os.path.join(self.execution_path, "video/Detected/detected_"+videoName)
@@ -174,7 +172,7 @@ class visionDetection():
     ## detections also logged in detection file if object being searched (self.search) is found
     ######
     def imageDetect(self,frame,imgType):
-        detector = self.imgDetector
+        detector = self.detector
 
         detections = detector.detectObjectsFromImage(input_image=frame, input_type=imgType, output_type=imgType)#,output_image_path=os.path.join(execution_path , "images/Detected_"+time.strftime("%a_%d_%b_%Y %H_%M_%S",time.localtime())))
 
@@ -205,7 +203,7 @@ class visionDetection():
     ## outputs video with detection markings in execution_path within folder "images" in subfolder "Detected"
     ######
     def imageSavedDetect(self,image_name):
-        detector=self.imgDetector
+        detector=self.detector
         self.output=open("detected_listings.txt","w")
         self.output.write("\n")
         self.output.write(image_name+":")
