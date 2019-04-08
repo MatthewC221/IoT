@@ -23,26 +23,26 @@ class visionDetection():
     ## Input:
     ## execution_path = place where yolo file is located
     ## modelFile = file name of model used
-    ## i_or_v = 'i' for image, 'v' for video
+    ## imageOrVideo = "image" for image, "video" for video
     ####
     ## Output:
     ## text file named "detected_vid_listings_{day}_{month}_{year}"
     ######
-    def __init__(self, execution_path, i_or_v='i'):
+    def __init__(self, executionPath, imageOrVideo="image"):
 
         #log file
-        self.time = time.strftime("%d_%b_%Y", time.localtime(time.time()))
-        self.output = open("detected_listings_" + str(self.time) + ".txt", "w")
+        self.time = time.strftime("%d_%b_%Y", time.localtime())
+        self.output = open("detected_listings_" + self.time + ".txt", "w")
         self.output.close()
 
         #model
-        if i_or_v == 'v':
+        if imageOrVideo == "video":
             self.detector = VideoObjectDetection()
         else:
             self.detector = ObjectDetection()
 
         self.detector.setModelTypeAsYOLOv3()
-        self.detector.setModelPath(os.path.join(self.execution_path, "yolo.h5"))
+        self.detector.setModelPath(os.path.join(self.executionPath, "yolo.h5"))
         self.detector.loadModel()
 
         
@@ -100,7 +100,7 @@ class visionDetection():
     ## update detection log file with new detection log
     ######
     def frameDetectionLog(self, frameNumber = 0, outputArray, outputCount):
-        self.output = open("detected_listings_" + str(self.time) + ".txt", "a")
+        self.output = open("detected_listings_" + self.time + ".txt", "a")
 
         self.output.write("\nTime: ")
         self.output.write(time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()))
@@ -109,7 +109,7 @@ class visionDetection():
 
         for obj in outputArray:
             self.output.write("\n\t")
-            self.output.write(str(obj['name']) + " : "
+            self.output.write(str(obj["name"]) + " : "
                               + str(obj["percentage_probability"]) )
         
         self.output.write("\n")
@@ -137,7 +137,7 @@ class visionDetection():
 ####
 if __name__ == '__main__':
     execution_path = os.getcwd()
-    detections=visionDetection(execution_path, i_or_v='v')
+    detections=visionDetection(execution_path, imageOrVideo="video")
     cam = cv2.VideoCapture(0)
     detections.videoDetect(cam)
                                                          
