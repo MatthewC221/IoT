@@ -28,9 +28,10 @@ def main():
     freq = args.freq
     target = args.target
     threshold = args.threshold * 100
-    Detection = visionDetection()
     lastRecognition = time.time()
     boundingBoxes = []
+
+    Detection = visionDetection()
     while True:
         ret, frame = cap.read()
         if time.time() >= lastRecognition + freq:
