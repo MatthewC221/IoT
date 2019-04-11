@@ -28,11 +28,10 @@ class visionDetection():
     ## Output:
     ## text file named "detected_vid_listings_{day}_{month}_{year}"
     ######
-    def __init__(self, executionPath, imageOrVideo="image"):
+    def __init__(self, executionPath = os.getcwd(), imageOrVideo = "image"):
 
         #log file
-        self.time = time.strftime("%d_%b_%Y", time.localtime())
-        self.output = open("detected_listings_" + self.time + ".txt", "w")
+        self.output = open("detected_listings.txt", "w")
         self.output.close()
 
         #model
@@ -42,7 +41,7 @@ class visionDetection():
             self.detector = ObjectDetection()
 
         self.detector.setModelTypeAsYOLOv3()
-        self.detector.setModelPath(os.path.join(self.executionPath, "yolo.h5"))
+        self.detector.setModelPath(os.path.join(executionPath, "yolo.h5"))
         self.detector.loadModel()
 
         
@@ -75,14 +74,13 @@ class visionDetection():
         objectCounts = {}
         for eachItem in detections:
             if eachItem["name"] in objectCounts:
-                objectCounts[eachItem["name"]] =
-                                            objectCounts[eachItem["name"]] + 1
+                objectCounts[eachItem["name"]] = objectCounts[eachItem["name"]] + 1
             else:
                 objectCounts[eachItem["name"]] = 1
 
 
         if autoLog:
-            self.frameDetectionLog(detections, objectCounts)
+            self.frameDetectionLog(0, detections, objectCounts)
 
         return outFrame, detections, objectCounts
 
@@ -99,8 +97,8 @@ class visionDetection():
     ## Output:
     ## update detection log file with new detection log
     ######
-    def frameDetectionLog(self, frameNumber = 0, outputArray, outputCount):
-        self.output = open("detected_listings_" + self.time + ".txt", "a")
+    def frameDetectionLog(self, frameNumber, outputArray, outputCount):
+        self.output = open("detected_listings.txt", "a")
 
         self.output.write("\nTime: ")
         self.output.write(time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()))
@@ -124,7 +122,7 @@ class visionDetection():
     ####
     ## continuously outputs detections in detection log file
     ######
-    def videoDetect(self, camera):
+    def videoDetect(self, camera, minProb = 40):
         video_path = self.detector.detectObjectsFromVideo(camera_input=camera,
                                 save_detected_video = False, frames_per_second = 2,
                                 minimum_percentage_probability = minProb,
