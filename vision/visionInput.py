@@ -10,18 +10,22 @@ import numpy as np
 import argparse
 from visionDetection import visionDetection
 
+# I think there's an issue with setting up the transmissionSubprocess
+# I might want it to be in a class, that has an active / not active state
+
 cmdFile = "./printTest.py"
 # If subprocess is still running, kill and send new data
 def spawnTransmissionSubprocess(transmissionSubprocess, message):
     system = platform.system()
-    if transmissionSubprocess and transmissionSubprocess.poll() == \
-        None:
+    if transmissionSubprocess:
+        print ("Subprocess active = " + str(transmissionSubprocess.poll()))
+    if transmissionSubprocess is not None and transmissionSubprocess.poll() \
+        is None:
         if system == 'Linux':
             os.killpg(os.getpgid(transmissionSubprocess.pid), 
                 signal.SIGTERM)
         elif system == 'Windows':
-            subprocess.call(['taskkill', '/F', '/T', '/PID', 
-                str(transmissionSubprocess.pid)])
+            os.kill(transmissionSubprocess.pid, signal.CTRL_C_EVENT)
         else:
             print ("Kill for [Darwin] Mac")
 
@@ -99,7 +103,6 @@ def main():
             for detect in detections:
                 if detect['name'] == target:
                     boundingBoxes.append(detect['box_points'])
-            # cv2.imshow('recognition', recognitionFrame)
             print ("Recognition objective [{0}]: |detected| = {1}"
                 .format(target, detectionResult.get(target, 0)))
 
