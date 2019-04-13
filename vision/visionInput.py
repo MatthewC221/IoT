@@ -18,8 +18,7 @@ def spawnTransmissionSubprocess(transmissionSubprocess, message):
     if transmissionSubprocess and transmissionSubprocess.poll() \
         is None:
         if system == 'Linux':
-            os.killpg(os.getpgid(transmissionSubprocess.pid), 
-                signal.SIGTERM)
+            os.killpg(os.getpgid(transmissionSubprocess.pid), signal.SIGTERM)
         elif system == 'Windows':
             subprocess.call(['taskkill', '/F', '/T', '/PID', 
                 str(transmissionSubprocess.pid)])
@@ -132,7 +131,7 @@ def main():
                 transmissionSubprocess, detectionResult)
 
         for corners in boundingBoxes:
-            cv2.rectangle(frame, (corners[0], corners[1]), (corners[2], \
+            cv2.rectangle(frame, (corners[0], corners[1]), (corners[2], 
                 corners[3]), openCVRed, 2)
 
         cv2.imshow('frame', frame)
