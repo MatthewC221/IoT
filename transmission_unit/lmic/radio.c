@@ -787,7 +787,7 @@ void radio_irq_handler (u1_t dio) {
             // indicate timeout
             LMIC.dataLen = 0;
         } else {
-            fprintf(stderr, "OhOh. Unknown interrupt flags for FSK\n");
+            //fprintf(stderr, "OhOh. Unknown interrupt flags for FSK\n");
             while(1);
         }
     }

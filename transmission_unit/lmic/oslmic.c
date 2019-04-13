@@ -103,3 +103,25 @@ void os_runloop () {
         }
     }
 }
+
+void os_runloop_once () {
+    //while(1) {
+        osjob_t* j = NULL;
+        hal_disableIRQs();
+        // check for runnable jobs
+        if(OS.runnablejobs) {
+            j = OS.runnablejobs;
+            OS.runnablejobs = j->next;
+        } else if(OS.scheduledjobs && hal_checkTimer(OS.scheduledjobs->deadline)) { // check for expired timed jobs
+            j = OS.scheduledjobs;
+            OS.scheduledjobs = j->next;
+        } else { // nothing pending
+            hal_sleep(); // wake by irq (timer already restarted)
+        }
+       hal_enableIRQs();
+        if(j) { // run job callback
+            j->func(j);
+        }
+    //}
+}
+

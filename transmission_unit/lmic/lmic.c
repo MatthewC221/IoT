@@ -642,7 +642,7 @@ static void updateTx (ostime_t txbeg) {
     LMIC.freq  = freq & ~(u4_t)3;
     LMIC.txpow = band->txpow;
     band->avail = txbeg + airtime * band->txcap;
-    printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
+    //printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
     if( LMIC.globalDutyRate != 0 )
         LMIC.globalDutyAvail = txbeg + (airtime<<LMIC.globalDutyRate);
 }
@@ -785,7 +785,7 @@ static void updateTx (ostime_t txbeg) {
         //LMIC.freq = US915_125kHz_UPFBASE + chnl*US915_125kHz_UPFSTEP;
         LMIC.freq = US915_125kHz_UPFBASE;
         LMIC.txpow = 30;
-    	printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
+    	//printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
         return;
     }
     LMIC.txpow = 26;
@@ -796,7 +796,7 @@ static void updateTx (ostime_t txbeg) {
         LMIC.freq = LMIC.xchFreq[chnl-72];
     }
 
-    printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
+    //printf("%lu: freq=%lu\n", os_getTime(), LMIC.freq);
     // Update global duty cycle stats
     if( LMIC.globalDutyRate != 0 ) {
         ostime_t airtime = calcAirTime(LMIC.rps, LMIC.dataLen);
@@ -1914,7 +1914,7 @@ static void engineUpdate (void) {
     }
 
     if( (LMIC.opmode & (OP_JOINING|OP_REJOIN|OP_TXDATA|OP_POLL)) != 0 ) {
-        // Need to TX some data...
+	// Need to TX some data...
         // Assuming txChnl points to channel which first becomes available again.
         bit_t jacc = ((LMIC.opmode & (OP_JOINING|OP_REJOIN)) != 0 ? 1 : 0);
         // Find next suitable channel and return availability time
@@ -2113,10 +2113,13 @@ void LMIC_setTxData (void) {
 
 //
 int LMIC_setTxData2 (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
-    if( dlen > SIZEOFEXPR(LMIC.pendTxData) )
+    if( dlen > SIZEOFEXPR(LMIC.pendTxData) ){
+	fprintf(stdout, "1002");
         return -2;
-    if( data != (xref2u1_t)0 )
+    }
+    if( data != (xref2u1_t)0 ){
         os_copyMem(LMIC.pendTxData, data, dlen);
+    }
     LMIC.pendTxConf = confirmed;
     LMIC.pendTxPort = port;
     LMIC.pendTxLen  = dlen;
