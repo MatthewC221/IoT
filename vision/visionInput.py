@@ -10,7 +10,8 @@ import numpy as np
 import argparse
 from visionDetection import visionDetection
 
-cmdFile = "./printTest.py"
+cmdFile = "./printTest.py"      # Replace with transmission script
+
 # If subprocess is still running, kill and send new data
 def spawnTransmissionSubprocess(transmissionSubprocess, message):
     system = platform.system()
@@ -70,7 +71,7 @@ def main():
     parser.add_argument('--showTargets', action='store_true',
         help='show all possible recognition targets')
     parser.add_argument('--log', action='store_true',
-        help='log recognition')
+        help='log recognition with timestamps')
     parser.add_argument('--threshold', default=0.4, type=float,
         help='threshold for recognition in range [0, 1]')
 
@@ -101,7 +102,7 @@ def main():
     DetectionSystem = visionDetection()
    
     detectionResult = {}
-    # Subtract the delays to start immediately
+    # Subtract the delays to start tasks immediately
     lastDetectionTime = time.time() - detectDelay 
     lastTransmissionTime = time.time() - transmitDelay
     transmissionSubprocess = None
