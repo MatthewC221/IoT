@@ -57,8 +57,6 @@ def aggregateDetections(newDetection, currentDetections):
 def main():
     parser = argparse.ArgumentParser(description='Performs recognition on \
         potential objects.')
-    parser.add_argument('--dest', default="results", 
-        help='specifies destination of log files if log is on')
     parser.add_argument('--detectDelay', default=1.0, type=float,
         help='recognises every n seconds')
     parser.add_argument('--transmitDelay', default=20.0, type=float,
