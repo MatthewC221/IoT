@@ -2114,7 +2114,6 @@ void LMIC_setTxData (void) {
 //
 int LMIC_setTxData2 (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
     if( dlen > SIZEOFEXPR(LMIC.pendTxData) ){
-	fprintf(stdout, "1002");
         return -2;
     }
     if( data != (xref2u1_t)0 ){

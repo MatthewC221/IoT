@@ -15,6 +15,5 @@ modified based on https://github.com/ernstdevreede/lmic_pi exmaple "thethingsnet
 
 ### output(stdout)
 - 1001   => successfully sent out
-- 1002   => message length is larger than 51 bytes
 - 1007   => max runtime reached
 - others => woops, unexpected errors

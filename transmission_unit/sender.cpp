@@ -1,29 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
- *
- * Permission is hereby granted, free of charge, to anyone
- * obtaining a copy of this document and accompanying files,
- * to do whatever they want with them without any restriction,
- * including, but not limited to, copying, modification and redistribution.
- * NO WARRANTY OF ANY KIND IS PROVIDED.
- *
- * This example sends a valid LoRaWAN packet with payload "Hello, world!", that
- * will be processed by The Things Network server.
- *
- * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in g1, 
-*  0.1% in g2). 
- *
- * Change DEVADDR to a unique address! 
- * See http://thethingsnetwork.org/wiki/AddressSpace
- *
- * Do not forget to define the radio type correctly in config.h, default is:
- *   #define CFG_sx1272_radio 1
- * for SX1272 and RFM92, but change to:
- *   #define CFG_sx1276_radio 1
- * for SX1276 and RFM95.
- *
- *******************************************************************************/
-
 #include <stdio.h>
 #include <time.h>
 #include <wiringPi.h>
@@ -34,7 +8,7 @@
 //maximum length of the payload in chars
 #define MAX_DATA_LENGTH 51
 //the max runtime for the script before it kills itself
-#define MAX_RUNTIME 10
+#define MAX_RUNTIME 30
 
 // LoRaWAN Application identifier (AppEUI)
 // Not used in this example
@@ -76,8 +50,11 @@ void os_getDevKey (u1_t* buf) {
 }
 
 static osjob_t sendjob;
+// store the message to be sent
 u1_t data_to_send[MAX_DATA_LENGTH];
+// store the length of the message
 int data_to_send_length;
+// an exit condition for the program if it is unset
 int running = 1;
 
 
@@ -89,11 +66,21 @@ lmic_pinmap pins = {
   .dio = {7,4,5}
 };
 
+
+/*
+	- called when runtime reached MAX_RUN to limit number of instances running 
+	- output "1007" to stdout
+*/
 static void maxrt_reached_exit(osjob_t* j){
-	fprintf(stdout, "1007");
+	fprintf(stdout, "1007"); 
 	running = 0;
 }
 
+/*
+	- pass the message to the LMIC library and ready to be sent out
+	- adds a delayed transmission to the queue if the device is busying currently
+	- truncate the message if needed
+*/
 static void do_send(osjob_t* j){
       time_t t=time(NULL);
       //fprintf(stdout, "[%x] (%ld) %s\n", hal_ticks(), t, ctime(&t));
@@ -106,14 +93,21 @@ static void do_send(osjob_t* j){
       // Prepare upstream data transmission at the next possible time.
       if(data_to_send_length > MAX_DATA_LENGTH)
 	data_to_send_length = MAX_DATA_LENGTH;
-      //LMIC_setTxData2(1, data_to_send, data_to_send_length, 1);
-      LMIC_setTxData2(1, data_to_send, data_to_send_length, 0);
+      if(LMIC_setTxData2(1, data_to_send, data_to_send_length, 0)==-2){
+	// data length too large
+	// shouldnt happen as the message will be truncated	
+	// fprintf(stdout, "1002");
+       }
     }
          
 }
 
+/*
+	- result for the transmission
+	- adds a delayed transmission to the queue if the previous transmission failed
+	- output "1001" to stdout if message is sent succesfully
+*/
 void onEvent (ev_t ev) {
-    //debug_event(ev);
 
     switch(ev) {
       // scheduled data sent (optionally data received)
@@ -122,9 +116,9 @@ void onEvent (ev_t ev) {
           // use this event to keep track of actual transmissions
           //fprintf(stdout, "Event EV_TXCOMPLETE, time: %d\n", millis() / 1000);
 	  fprintf(stdout, "1001");  
-          if(LMIC.dataLen) { // data received in rx slot after tx
-              //debug_buf(LMIC.frame+LMIC.dataBeg, LMIC.dataLen);
-              //printf("MSG received\n");
+          if(LMIC.dataLen) { 
+	      // data received in rx slot after tx
+              //not used currently
           }
 	  running = 0;
           break;
@@ -155,15 +149,13 @@ void setup() {
   LMIC_stopPingable();
   // Set data rate and transmit power (note: txpow seems to be ignored by the library)
   LMIC_setDrTxpow(DR_SF7,14);
-  //
 }
 
 
 
 int main(int argc, char** argv) {
-  
   if(argc != 2) {
-	//printf("usage: %s <dataToSend>\n", argv[0]);
+	// usage: ./sender <dataToSend>
 	return 1;
   }
 
