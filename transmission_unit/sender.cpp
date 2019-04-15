@@ -8,7 +8,7 @@
 //maximum length of the payload in chars
 #define MAX_DATA_LENGTH 51
 //the max runtime for the script before it kills itself
-#define MAX_RUNTIME 30
+#define MAX_RUNTIME 60
 
 // LoRaWAN Application identifier (AppEUI)
 // Not used in this example
@@ -36,20 +36,21 @@ static const u4_t DEVADDR = 0x260013DB ; // <-- Change this address for every no
 
 // provide application router ID (8 bytes, LSBF)
 void os_getArtEui (u1_t* buf) {
-    memcpy(buf, APPEUI, 8);
+	memcpy(buf, APPEUI, 8);
 }
 
 // provide device ID (8 bytes, LSBF)
 void os_getDevEui (u1_t* buf) {
-    memcpy(buf, DEVEUI, 8);
+	memcpy(buf, DEVEUI, 8);
 }
 
 // provide device key (16 bytes)
 void os_getDevKey (u1_t* buf) {
-    memcpy(buf, DEVKEY, 16);
+	memcpy(buf, DEVKEY, 16);
 }
 
-static osjob_t sendjob;
+// queue of jobs
+static osjob_t jobs;
 // store the message to be sent
 u1_t data_to_send[MAX_DATA_LENGTH];
 // store the length of the message
@@ -57,13 +58,12 @@ int data_to_send_length;
 // an exit condition for the program if it is unset
 int running = 1;
 
-
 // Pin mapping
 lmic_pinmap pins = {
-  .nss = 6,
-  .rxtx = UNUSED_PIN, // Not connected on RFM92/RFM95
-  .rst = 0,  // Needed on RFM92/RFM95
-  .dio = {7,4,5}
+	.nss = 6,
+	.rxtx = UNUSED_PIN, // Not connected on RFM92/RFM95
+	.rst = 0,  // Needed on RFM92/RFM95
+	.dio = {7,4,5}
 };
 
 
@@ -71,35 +71,39 @@ lmic_pinmap pins = {
 	- called when runtime reached MAX_RUN to limit number of instances running 
 	- output "1007" to stdout
 */
-static void maxrt_reached_exit(osjob_t* j){
+static void maxrt_reached_exit (osjob_t* j) {
 	fprintf(stdout, "1007"); 
+	// unset running to allow program to exit
 	running = 0;
 }
 
 /*
 	- pass the message to the LMIC library and ready to be sent out
-	- adds a delayed transmission to the queue if the device is busying currently
-	- truncate the message if needed
+	- schedule another transmission to the queue if the device is busy
+	- truncate the message if it is too large
 */
-static void do_send(osjob_t* j){
-      time_t t=time(NULL);
-      //fprintf(stdout, "[%x] (%ld) %s\n", hal_ticks(), t, ctime(&t));
-      // Show TX channel (channel numbers are local to LMIC)
-      // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & (1 << 7)) {
-      //printf("Device not ready, retrying");
-      os_setTimedCallback(j, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
-    } else {
-      // Prepare upstream data transmission at the next possible time.
-      if(data_to_send_length > MAX_DATA_LENGTH)
-	data_to_send_length = MAX_DATA_LENGTH;
-      if(LMIC_setTxData2(1, data_to_send, data_to_send_length, 0)==-2){
-	// data length too large
-	// shouldnt happen as the message will be truncated	
-	// fprintf(stdout, "1002");
-       }
-    }
-         
+static void do_send (osjob_t* j) {
+	time_t t=time(NULL);
+	// Show TX channel (channel numbers are local to LMIC)
+	// Check if there is not a current TX/RX job running
+	if (LMIC.opmode & (1 << 7)) {
+		// device not ready
+		// schedule another transmission
+		os_setTimedCallback(j, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
+	} else {
+		// message length check
+		// truncate if needed
+		if (data_to_send_length > MAX_DATA_LENGTH) {
+			data_to_send_length = MAX_DATA_LENGTH;
+		}
+		// send out the message using LMIC_setTxData2
+		// check return value to make sure message length is within the limit
+		if (LMIC_setTxData2(1, data_to_send, data_to_send_length, 0) == -2) {
+			// data length too large
+			// shouldnt happen as the message will be truncated	
+			fprintf(stdout, "1002");
+		}
+	}
 }
 
 /*
@@ -108,74 +112,73 @@ static void do_send(osjob_t* j){
 	- output "1001" to stdout if message is sent succesfully
 */
 void onEvent (ev_t ev) {
-
-    switch(ev) {
-      // scheduled data sent (optionally data received)
-      // note: this includes the receive window!
-      case EV_TXCOMPLETE:
-          // use this event to keep track of actual transmissions
-          //fprintf(stdout, "Event EV_TXCOMPLETE, time: %d\n", millis() / 1000);
-	  fprintf(stdout, "1001");  
-          if(LMIC.dataLen) { 
-	      // data received in rx slot after tx
-              //not used currently
-          }
-	  running = 0;
-          break;
-       default:
-	  //printf("Failed to send, retrying\n");
-	  os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
-          break;
-    }
+	switch(ev) {
+	case EV_TXCOMPLETE:
+		// message succesfully sent out
+		fprintf(stdout, "1001");  
+		if (LMIC.dataLen) { 
+			// data received in rx slot after tx
+			// not used currently
+		}
+		// unset running to allow program to exit
+		running = 0;
+		break;
+	default:
+		// message not sent out succesfully
+		// schedule another transmission
+		os_setTimedCallback(&jobs, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
+		break;
+	}
 }
 
-void setup() {
-  // LMIC init
-  wiringPiSetup();
+void setup () {
+	// LMIC init
+	wiringPiSetup();
 
-  os_init();
-  // Reset the MAC state. Session and pending data transfers will be discarded.
-  LMIC_reset();
-  // Set static session parameters. Instead of dynamically establishing a session 
-  // by joining the network, precomputed session parameters are be provided.
-  LMIC_setSession (0x1, DEVADDR, (u1_t*)DEVKEY, (u1_t*)ARTKEY);
-  // Disable data rate adaptation
-  LMIC_setAdrMode(0);
-  // Disable link check validation
-  LMIC_setLinkCheckMode(0);
-  // Disable beacon tracking
-  LMIC_disableTracking ();
-  // Stop listening for downstream data (periodical reception)
-  LMIC_stopPingable();
-  // Set data rate and transmit power (note: txpow seems to be ignored by the library)
-  LMIC_setDrTxpow(DR_SF7,14);
+	os_init();
+	// Reset the MAC state. Session and pending data transfers will be discarded.
+	LMIC_reset();
+	// Set static session parameters. Instead of dynamically establishing a session 
+	// by joining the network, precomputed session parameters are be provided.
+	LMIC_setSession (0x1, DEVADDR, (u1_t*)DEVKEY, (u1_t*)ARTKEY);
+	// Disable data rate adaptation
+	LMIC_setAdrMode(0);
+	// Disable link check validation
+	LMIC_setLinkCheckMode(0);
+	// Disable beacon tracking
+	LMIC_disableTracking ();
+	// Stop listening for downstream data (periodical reception)
+	LMIC_stopPingable();
+	// Set data rate and transmit power (note: txpow seems to be ignored by the library)
+	LMIC_setDrTxpow(DR_SF7,14);
 }
 
+int main (int argc, char** argv) {
+	if (argc != 2) {
+		printf("usage: %s <dataToSend>\n", argv[0]); 
+		return 1;
+	}
 
+	// load message and length
+	int i=0;
+	while (argv[1][i]) {
+		data_to_send[i]=argv[1][i];
+		i++;
+	}
+	data_to_send[i]='\0';
+	data_to_send_length = i;
 
-int main(int argc, char** argv) {
-  if(argc != 2) {
-	// usage: ./sender <dataToSend>
-	return 1;
-  }
+	setup();
 
-  int i=0;
-  while(argv[1][i]) {
-    data_to_send[i]=argv[1][i];
-    i++;
-  }
-
-  data_to_send[i]='\0';
-  data_to_send_length = i;
-  
-  setup();
- 
-  do_send(&sendjob);
-  os_setTimedCallback(&sendjob, os_getTime()+sec2osticks(MAX_RUNTIME), maxrt_reached_exit);
-  while (running) {
-	  os_runloop_once();
-  }
-  return 0;
+	// first try transmission
+	do_send(&jobs);
+	// schedule a timed exit
+	os_setTimedCallback(&jobs, os_getTime()+sec2osticks(MAX_RUNTIME), maxrt_reached_exit);
+	// excute the jobs queued while running is set
+	while (running) {
+		os_runloop_once();
+	}
+	return 0;
 }
 
 
