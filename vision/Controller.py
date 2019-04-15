@@ -42,7 +42,7 @@ This method will aggregate the new detection results into our current
 detections. This is done because a new detection should not override what
 we've accumulated so far.
 
-Imagine: (Transmission every 60 seconds, detect every 10 seconds)
+Imagine: (Transmission every 60 seconds, detect every 1 second)
 A man walks by the camera at :05, and exits at :10
 In transmission 1 at :60, we want to send {'person': 1}
 """
