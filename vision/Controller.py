@@ -104,7 +104,7 @@ def main():
     transmissionSubprocess = None
 
     while True:
-        ret, frame = cap.read()
+        _, frame = cap.read()
         currentTime = time.time()
         # Detection: shows detection on frame and aggregates result
         if currentTime >= lastDetectionTime + detectDelay:
