@@ -60,8 +60,11 @@ static struct {
 } message;
 
 static struct {
+	// max run time of the program
 	int max_rt;
+	// set to 1 to enable confirmed messages
 	int use_ack;
+	// delay between each transmission retry
 	int delay;
 } config;
 
