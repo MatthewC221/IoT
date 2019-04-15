@@ -15,8 +15,7 @@ cmdFile = "./printTest.py"      # Replace with transmission script
 # If subprocess is still running, kill and send new data
 def spawnTransmissionSubprocess(transmissionSubprocess, message):
     system = platform.system()
-    if transmissionSubprocess and transmissionSubprocess.poll() \
-        is None:
+    if transmissionSubprocess and transmissionSubprocess.poll() is None:
         if system == 'Linux':
             os.killpg(os.getpgid(transmissionSubprocess.pid), signal.SIGTERM)
         elif system == 'Windows':
