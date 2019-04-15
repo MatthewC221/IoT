@@ -4,11 +4,11 @@
 #include <lmic.h>
 #include <hal.h>
 #include <local_hal.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 //maximum length of the payload in chars
 #define MAX_DATA_LENGTH 51
-//the max runtime for the script before it kills itself
-#define MAX_RUNTIME 60
 
 // LoRaWAN Application identifier (AppEUI)
 // Not used in this example
@@ -51,10 +51,20 @@ void os_getDevKey (u1_t* buf) {
 
 // queue of jobs
 static osjob_t jobs;
-// store the message to be sent
-u1_t data_to_send[MAX_DATA_LENGTH];
-// store the length of the message
-int data_to_send_length;
+
+static struct {
+	// store the message to be sent
+	u1_t data[MAX_DATA_LENGTH];
+	// store the length of the message
+	int length;
+} message;
+
+static struct {
+	int max_rt;
+	int use_ack;
+	int delay;
+} config;
+
 // an exit condition for the program if it is unset
 int running = 1;
 
@@ -71,7 +81,7 @@ lmic_pinmap pins = {
 	- called when runtime reached MAX_RUN to limit number of instances running 
 	- output "1007" to stdout
 */
-static void maxrt_reached_exit (osjob_t* j) {
+static void maxrt_exit (osjob_t* j) {
 	fprintf(stdout, "1007"); 
 	// unset running to allow program to exit
 	running = 0;
@@ -89,16 +99,16 @@ static void do_send (osjob_t* j) {
 	if (LMIC.opmode & (1 << 7)) {
 		// device not ready
 		// schedule another transmission
-		os_setTimedCallback(j, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
+		os_setTimedCallback(j, os_getTime()+sec2osticks(config.delay), do_send);
 	} else {
 		// message length check
 		// truncate if needed
-		if (data_to_send_length > MAX_DATA_LENGTH) {
-			data_to_send_length = MAX_DATA_LENGTH;
+		if (message.length > MAX_DATA_LENGTH) {
+			message.length = MAX_DATA_LENGTH;
 		}
 		// send out the message using LMIC_setTxData2
 		// check return value to make sure message length is within the limit
-		if (LMIC_setTxData2(1, data_to_send, data_to_send_length, 0) == -2) {
+		if (LMIC_setTxData2(1, message.data, message.length, config.use_ack) == -2) {
 			// data length too large
 			// shouldnt happen as the message will be truncated	
 			fprintf(stdout, "1002");
@@ -120,18 +130,23 @@ void onEvent (ev_t ev) {
 			// data received in rx slot after tx
 			// not used currently
 		}
-		// unset running to allow program to exit
 		running = 0;
 		break;
 	default:
 		// message not sent out succesfully
 		// schedule another transmission
-		os_setTimedCallback(&jobs, os_getTime()+sec2osticks(MAX_RUNTIME/3), do_send);
+		os_setTimedCallback(&jobs, os_getTime()+sec2osticks(config.delay), do_send);
 		break;
 	}
 }
 
 void setup () {
+	// default configs
+	message.length = -1;
+	config.max_rt = 60;
+	config.delay = 5;
+	config.use_ack = 0;
+
 	// LMIC init
 	wiringPiSetup();
 
@@ -154,26 +169,64 @@ void setup () {
 }
 
 int main (int argc, char** argv) {
-	if (argc != 2) {
-		printf("usage: %s <dataToSend>\n", argv[0]); 
-		return 1;
-	}
-
-	// load message and length
-	int i=0;
-	while (argv[1][i]) {
-		data_to_send[i]=argv[1][i];
-		i++;
-	}
-	data_to_send[i]='\0';
-	data_to_send_length = i;
-
 	setup();
+
+	// load  user configs
+	int opt;
+	while ((opt = getopt(argc, argv, ":r:d:m:ah"))) {
+		if (opt == -1) {
+		    break;
+		}
+		switch (opt) {
+			case 'h':
+				printf(
+					"usage:\n"
+					"-h print this message\n"
+					"-m <value> message to send\n"
+					"-r <value> [optional] max runtime after which program exits, default to 60\n"
+					"-d <value> [optional] delay between transmission retry, default to 5\n"
+					"-a         [optional] enable use of ACK, default disabled \n"
+
+				); 
+				return 0;
+			case 'r':
+				config.max_rt = atoi(optarg);	
+				break;
+			case 'd':
+				config.delay = atoi(optarg);
+				break;
+			case 'm':
+				// load message and length
+				{
+					int i=0;
+					while (optarg[i]) {
+						message.data[i]=optarg[i];
+						i++;
+					}
+					message.data[i]='\0';
+					message.length = i;
+				} 
+				break;
+			case 'a':
+				config.use_ack = 1;
+				break;
+			case ':':
+				printf("missing arguments, use -h for help\n");
+				return 0;
+			default:
+				printf("invalid arguments, use -h for help\n");
+				return 0;
+		}	
+	}
+	if (message.length == -1){
+		printf("missing message to be sent, use -h for help\n");
+		return 0;
+	}
 
 	// first try transmission
 	do_send(&jobs);
 	// schedule a timed exit
-	os_setTimedCallback(&jobs, os_getTime()+sec2osticks(MAX_RUNTIME), maxrt_reached_exit);
+	os_setTimedCallback(&jobs, os_getTime()+sec2osticks(config.max_rt), maxrt_exit);
 	// excute the jobs queued while running is set
 	while (running) {
 		os_runloop_once();
