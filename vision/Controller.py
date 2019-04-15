@@ -126,6 +126,7 @@ def main():
             if len(detectionResult) == 0: continue
             transmissionSubprocess = spawnTransmissionSubprocess(
                 transmissionSubprocess, detectionResult)
+            detectionResult.clear()
 
         for corners in boundingBoxes:
             cv2.rectangle(frame, (corners[0], corners[1]), (corners[2], 
