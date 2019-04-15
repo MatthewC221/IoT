@@ -1,0 +1,10 @@
+body {
+    display: flex;
+    justify-content: center;
+    background-color: #fffcf9;
+    font-family: sans-serif;
+}
+
+#container {
+    width: 100%;
+}
