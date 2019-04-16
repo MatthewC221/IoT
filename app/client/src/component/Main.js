@@ -16,7 +16,7 @@ class Main extends Component {
                     <div>
                         <Switch>
                             <Route exact path="/" component={Home} />
-                            <Route path="/camera" component={CameraManager} />
+                            <Route path="/device" component={CameraManager} />
                             <Route path="/manage" component={ModuleManager} />
                             <Route path="/store" component={Store} />
                             <Route path="/account" component={AccountManager} />

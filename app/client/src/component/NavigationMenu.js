@@ -6,7 +6,7 @@ class NavigationMenu extends Component {
     render() {
         let menuItemsInfo = [
             {name: "home page", icon: "home_heart.png"},
-            {name: "camera", icon: "camera.png"},
+            {name: "device", icon: "camera.png"},
             {name: "manage", icon: "contract.png"},
             {name: "store", icon: "coin.png"},
             {name: "account", icon: "key.png"}

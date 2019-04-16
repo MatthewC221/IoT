@@ -12,8 +12,14 @@ const ttnConfig = {
     accessKey: 'ttn-account-v2.kwfGp5IlnhPua5xrHsF9PeIH6LyWyPMKXGOgP7oVZ88'
 }
 
+const twilioConfig = {
+    accountSid: 'ACd8d455064f253c4a2e493a29b3213f77',
+    authToken: '912dc7896ae121ca6a13c471f58f78f0'
+}
+
 module.exports = {
     productConfig: productConfig,
     ttnConfig: ttnConfig,
-    vapidKeys: vapidKeys
+    vapidKeys: vapidKeys,
+    twilioConfig: twilioConfig
 }

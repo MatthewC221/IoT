@@ -9,7 +9,7 @@ function MemberProfile(props) {
     }
 
     const imageStyle = {
-        boxShadow: "0px 0px 15px 0px #333",
+        border: "1px solid #808080",
         width: 250,
         height: "auto",
         paddingTop: 10,
