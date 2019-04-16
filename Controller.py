@@ -1,4 +1,7 @@
 import sys
+
+visionPath = './vision'
+sys.path.append(visionPath)
 import os 
 import signal
 import subprocess
@@ -11,7 +14,7 @@ import argparse
 from visionDetection import visionDetection
 
 testCmdFile = ["python", "./printTest.py"] 
-realCmdFile = ["./sender", "-m"]
+realCmdFile = ["placeholder", "-m"]
 
 # If subprocess is still running, kill and send new data
 def spawnTransmissionSubprocess(cmd, transmissionSubprocess, message):
@@ -72,6 +75,8 @@ def main():
         help='threshold for recognition in range [0, 1]')
     parser.add_argument('--realTransmission', action='store_true',
         help='perform real transmissions over LoRa using ./sender')
+    parser.add_argument('--transmissionFile', default='./sender'
+        help='location of transmission file')
 
     args = parser.parse_args()
     if args.showTargets:
@@ -92,6 +97,7 @@ def main():
     cmd = testCmdFile
     if args.realTransmission:
         cmd = realCmdFile
+        cmd[0] = args.transmissionFile
 
     cap = cv2.VideoCapture(args.camIndex)
     detectDelay = args.detectDelay
@@ -101,7 +107,7 @@ def main():
     threshold = args.threshold * 100
     openCVRed = (0, 0, 255)
     boundingBoxes = []
-    DetectionSystem = visionDetection()
+    DetectionSystem = visionDetection(executionPath=visionPath)
    
     detectionResult = {}
     # Subtract the delays to start tasks immediately
