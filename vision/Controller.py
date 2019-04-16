@@ -10,10 +10,11 @@ import numpy as np
 import argparse
 from visionDetection import visionDetection
 
-cmdFile = "./printTest.py"      # Replace with transmission script
+testCmdFile = ["python", "./printTest.py"] 
+realCmdFile = ["./sender", "-m"]
 
 # If subprocess is still running, kill and send new data
-def spawnTransmissionSubprocess(transmissionSubprocess, message):
+def spawnTransmissionSubprocess(cmd, transmissionSubprocess, message):
     system = platform.system()
     if transmissionSubprocess and transmissionSubprocess.poll() is None:
         if system == 'Linux':
@@ -25,12 +26,11 @@ def spawnTransmissionSubprocess(transmissionSubprocess, message):
             print ("Kill for [Darwin] Mac")
 
     if system == 'Linux':
-        transmissionSubprocess = subprocess.Popen(["python", cmdFile,
-            str(message)], shell=True, preexec_fn=os.setsid)
+        transmissionSubprocess = subprocess.Popen(cmd + [str(message)], 
+            shell=True, preexec_fn=os.setsid)
     elif system == 'Windows':
-        transmissionSubprocess = subprocess.Popen(["python", cmdFile,
-            str(message)], shell=True, 
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+        transmissionSubprocess = subprocess.Popen(cmd + [str(message)], 
+            shell=True, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
     else:
         print ("Create subprocess for [Darwin] Mac")
 
@@ -70,6 +70,8 @@ def main():
         help='log recognition with timestamps')
     parser.add_argument('--threshold', default=0.4, type=float,
         help='threshold for recognition in range [0, 1]')
+    parser.add_argument('--realTransmission', action='store_true',
+        help='perform real transmissions over LoRa using ./sender')
 
     args = parser.parse_args()
     if args.showTargets:
@@ -86,6 +88,10 @@ def main():
 "toothbrush"]
             ''')
         return
+
+    cmd = testCmdFile
+    if args.realTransmission:
+        cmd = realCmdFile
 
     cap = cv2.VideoCapture(args.camIndex)
     detectDelay = args.detectDelay
@@ -124,7 +130,7 @@ def main():
         if currentTime >= lastTransmissionTime + transmitDelay:
             lastTransmissionTime = currentTime
             if len(detectionResult) == 0: continue
-            transmissionSubprocess = spawnTransmissionSubprocess(
+            transmissionSubprocess = spawnTransmissionSubprocess(cmd,
                 transmissionSubprocess, detectionResult)
             detectionResult.clear()
 
