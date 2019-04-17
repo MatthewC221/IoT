@@ -19,12 +19,11 @@ class CameraManager extends Component {
         }
 
         this.getTTNConnection = this.getTTNConnection.bind(this);
-        this.getMessage = this.getMessage.bind(this);
 
     }
 
     handleNewNotification(notification) {
-        const updatedNotifList = this.state.notifications.slice();
+        let updatedNotifList = this.state.notifications.slice();
         updatedNotifList.push(notification);
         this.setState({
             notifications: updatedNotifList
@@ -43,14 +42,6 @@ class CameraManager extends Component {
         })
         .catch(err => console.error(err));
     };
-
-    getMessage() {
-        if (this.state.message === null) {
-            return 'No new notifications.';
-        } else {
-            return `Message received at ${this.state.timestamp.toLocaleString()}: ${this.state.message}`;
-        }
-    }
 
     render() {
         this.getTTNConnection();
