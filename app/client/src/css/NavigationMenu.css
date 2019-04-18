@@ -1,0 +1,40 @@
+.navigation {
+    height: 100%;
+    width: 40px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgb(240, 231, 223);
+    overflow-x: hidden;
+    transition: all 0.5s;
+    padding: 100px 10px 0px 10px;
+}
+
+.navigation:hover {
+    width: 200px;
+}
+
+.navigation .nav-item {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.navigation .nav-icon {
+    width: 40px;
+    height: auto;
+}
+
+.navigation .nav-label {
+    margin: 0px 20px;
+    letter-spacing: 3px;
+    color: #000000;
+    white-space: nowrap;
+}
+
+.navigation .nav-label:hover {
+    color: #646464;
+}
