@@ -1,0 +1,8 @@
+{
+    "url": "mongodb://6324:comp6324_8@54.180.26.120:27017/",
+    "db_name": "6324_db",
+    "collections": {
+        "message": "message"
+    }
+}
+
