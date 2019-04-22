@@ -8,7 +8,6 @@ __author__ = 'Jason_Love'
 
 import os
 import numpy as np
-import imutils
 import time
 import cv2
 
@@ -25,7 +24,7 @@ class visionDetection():
     ## Output:
     ## text file named "detected_vid_listings_{day}_{month}_{year}"
     ######
-    def __init__(self, minimumProbability=0.2, executionPath = os.getcwd()):
+    def __init__(self, minimumProbability = 0.2, executionPath = os.getcwd()):
 
         #log file
         self.output = open("detected_listings.txt", 'w')
@@ -76,7 +75,7 @@ class visionDetection():
         predictions = self.detector.forward()
         
         # making prediction data readable
-        objectArray=[]
+        objectArray = []
         for detectedItems in range(predictions.shape[2]):
             probability = predictions[0, 0, detectedItems, 2]
             if (probability > self.minProb):
