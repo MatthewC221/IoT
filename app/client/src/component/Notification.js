@@ -39,7 +39,7 @@ class Notification extends Component {
 
         return (
             <div className="notification" style={notificationStyle} onClick={this.handleClick} onMouseEnter={this.handleHover} onMouseLeave={this.handleHover}>
-                Message received: <b>{this.props.notification.message}</b> at <b>{this.props.notification.timestamp.toLocaleString()}</b>
+                Sighting at <b>{this.props.notification.timestamp.toLocaleString()}</b>
             </div>
         )
     }
