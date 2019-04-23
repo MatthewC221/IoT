@@ -33,8 +33,6 @@ class visionDetection():
         #model files
         prototxt=os.path.join(executionPath, "MobileNetSSD_deploy.prototxt.txt")
         model=os.path.join(executionPath, "MobileNetSSD_deploy.caffemodel")
-
-        #print("[INFO] loading model...")
         self.detector = cv2.dnn.readNetFromCaffe(prototxt, model)
 
         self.minProb = minimumProbability
@@ -64,11 +62,16 @@ class visionDetection():
     ######
     def imageDetect(self, frame, autoLog = False):
 
-        #for finding object box_points latter
-        (originalHieght, originalWidth) = frame.shape[:2]
-
-        detectionParts = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
-		                        0.007843, (300, 300), 127.5)
+        # for finding object box_points latter
+        (originalHeight, originalWidth) = frame.shape[:2]
+	
+	# preprocess image with mean subtraction and normalization
+	newFrameSize = (300, 300) # allowed image size as defined by model
+	newFrame = cv2.resize(frame, newFrameSize)
+	scaleFactor = 0.007843
+	meanRGB = 127.5 # of the model's training dataset
+        detectionParts = cv2.dnn.blobFromImage(newFrame, scaleFactor,
+		                        newFrameSize, meanRGB)
 
         # pass image parts for detection and prediction
         self.detector.setInput(detectionParts)
@@ -78,11 +81,11 @@ class visionDetection():
         objectArray = []
         for detectedItems in range(predictions.shape[2]):
             probability = predictions[0, 0, detectedItems, 2]
-            if (probability > self.minProb):
+            if probability > self.minProb:
                 itemName = self.classes[int(predictions[0, 0, detectedItems, 1])]
-                boundingBox = detections[0, 0, detectedItems, 3:7] * \
-                              np.array([originalWidth, originalHieght,
-                                        originalWidth, originalHieght])
+                boundingBox = predictions[0, 0, detectedItems, 3:7] * \
+                              np.array([originalWidth, originalHeight,
+                                        originalWidth, originalHeight])
                 objectArray.append({'name': itemName,
                                     'percentage_probability': probability,
                                     'box_points': boundingBox.astype("int")})
@@ -98,7 +101,7 @@ class visionDetection():
         if autoLog:
             self.frameDetectionLog(objectArray, objectCounts)
 
-        return None, objectArray, objectCounts
+        return objectArray, objectCounts
 
 
     ######
@@ -144,7 +147,7 @@ class visionDetection():
 
         while True:
             ret, frame = camera.read()
-            _, items, count = self.imageDetect(frame)
+            items, count = self.imageDetect(frame)
             self.frameDetectionLog(items, count)
 
         
