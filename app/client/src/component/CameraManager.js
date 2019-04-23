@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import MapContainer from './MapContainer';
 // import config from '../config';
 import '../css/content.css';
-import NotificationContainer from './NotificationContainer'
-
+import NotificationContainer from './NotificationContainer';
 
 class CameraManager extends Component {
     render() {
-
         const sectionStyle = {
 
         }
@@ -22,6 +19,7 @@ class CameraManager extends Component {
                 </div>
             </div>
         )
+
     }
 }
 

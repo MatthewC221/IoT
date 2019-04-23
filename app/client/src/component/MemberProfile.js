@@ -30,7 +30,7 @@ function MemberProfile(props) {
     return (
         <div style={memberProfileStyle}>
             <div style={nameStyle}>{props.name}</div>
-            <img src="image/unknown_identity.png" style={imageStyle} />
+            <img src="image/unknown_identity.png" style={imageStyle} alt={`${props.name}`} />
             <div style={descriptionStyle}>{props.description}</div>
         </div>
     )

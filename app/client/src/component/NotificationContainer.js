@@ -73,8 +73,8 @@ class NotificationContainer extends Component {
                 <div style={itemStyle}>
                     {
                         this.props.notifications.map((entry, index) => (
-                            <div onClick={() => this.handleNotificationClick(index)}>
-                                <Notification notification={entry} key={index} />
+                            <div onClick={() => this.handleNotificationClick(index)} key={index}>
+                                <Notification notification={entry} />
                             </div>
                         ))
                     }

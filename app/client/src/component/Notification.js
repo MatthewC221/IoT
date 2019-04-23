@@ -8,8 +8,6 @@ class Notification extends Component {
         this.state = {
             hover: false,
             read: false,
-            timestamp: null,
-            message: null
         }
 
         this.handleHover = this.handleHover.bind(this);

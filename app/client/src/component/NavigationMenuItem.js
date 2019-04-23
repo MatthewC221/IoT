@@ -6,9 +6,9 @@ class NavigationMenuItem extends Component {
         let imgURL = "/image/" + this.props.img;
         let endpoint = (this.props.value === "home page") ? "/" : `/${this.props.value}`;
 
-        const iconStyle = {
-            zIndex: 0
-        }
+        // const iconStyle = {
+        //     zIndex: 0
+        // }
 
         const notifBubbleStyle = {
             position: "absolute",
