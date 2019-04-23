@@ -105,7 +105,8 @@ def main():
     threshold = args.threshold * 100
     openCVRed = (0, 0, 255)
     boundingBoxes = []
-    DetectionSystem = visionDetection(executionPath=visionPath)
+    DetectionSystem = visionDetection(minimumProbability=threshold,
+        executionPath=visionPath)
    
     detectionResult = {}
     # Subtract the delays to start tasks immediately
