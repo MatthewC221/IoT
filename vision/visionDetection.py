@@ -19,10 +19,10 @@ class visionDetection():
     ####
     ## Input:
     ## minimumProbability = threshold probability of accepting detection
-    ## executionPath = place where yolo file is located
+    ## executionPath = place where model file is located
     ####
     ## Output:
-    ## text file named "detected_vid_listings_{day}_{month}_{year}"
+    ## text file named "detected_listings"
     ######
     def __init__(self, minimumProbability = 0.2, executionPath = os.getcwd()):
 
@@ -34,6 +34,11 @@ class visionDetection():
         prototxt=os.path.join(executionPath, "MobileNetSSD_deploy.prototxt.txt")
         model=os.path.join(executionPath, "MobileNetSSD_deploy.caffemodel")
         self.detector = cv2.dnn.readNetFromCaffe(prototxt, model)
+	
+	#model parameters
+	self.scaleFactor = 0.007843
+	self.meanRGB = 127.5 # of the model's training dataset
+	self.modelFrameSize = (300, 300) # allowed image size as defined by model
 
         self.minProb = minimumProbability
 
@@ -66,12 +71,9 @@ class visionDetection():
         (originalHeight, originalWidth) = frame.shape[:2]
 	
 	# preprocess image with mean subtraction and normalization
-	newFrameSize = (300, 300) # allowed image size as defined by model
-	newFrame = cv2.resize(frame, newFrameSize)
-	scaleFactor = 0.007843
-	meanRGB = 127.5 # of the model's training dataset
-        detectionParts = cv2.dnn.blobFromImage(newFrame, scaleFactor,
-		                        newFrameSize, meanRGB)
+	newFrame = cv2.resize(frame, self.modelFrameSize)
+        detectionParts = cv2.dnn.blobFromImage(newFrame, self.scaleFactor,
+		                        self.modelFrameSize, self.meanRGB)
 
         # pass image parts for detection and prediction
         self.detector.setInput(detectionParts)
