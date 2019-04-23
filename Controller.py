@@ -30,10 +30,10 @@ def spawnTransmissionSubprocess(command, transmissionSubprocess, message):
 
     if system == 'Linux':
         transmissionSubprocess = subprocess.Popen(command + [str(message)], 
-            shell=True, preexec_fn=os.setsid)
+            preexec_fn=os.setsid)
     elif system == 'Windows':
         transmissionSubprocess = subprocess.Popen(command + [str(message)], 
-            shell=True, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
     else:
         print ("Create subprocess for [Darwin] Mac")
 
@@ -73,8 +73,6 @@ def main():
         help='log recognition with timestamps')
     parser.add_argument('--threshold', default=0.4, type=float,
         help='threshold for recognition in range [0, 1]')
-    parser.add_argument('--realTransmission', action='store_true',
-        help='perform real transmissions over LoRa using ./sender')
     parser.add_argument('--transmissionFile', default='./sender',
         help='location of transmission file')
 
@@ -95,7 +93,7 @@ def main():
         return
 
     command = testCommand
-    if args.realTransmission:
+    if args.transmissionFile:
         command = realCommand
         command[0] = args.transmissionFile
 
@@ -123,8 +121,7 @@ def main():
             lastDetectionTime = currentTime
             boundingBoxes.clear()
             _, detections, newDetectionResult = \
-                DetectionSystem.imageDetect(frame, autoLog=shouldLog, 
-                    minProb=threshold)
+                DetectionSystem.imageDetect(frame, autoLog=shouldLog)
             for detect in detections:
                 if detect['name'] == target:
                     boundingBoxes.append(detect['box_points'])
