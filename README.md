@@ -10,8 +10,7 @@ To run the modules individually, see the READMEs in the subdirectories.
 usage: Controller.py [-h] [--detectDelay DETECTDELAY]
                      [--transmitDelay TRANSMITDELAY] [--target TARGET]
                      [--camIndex CAMINDEX] [--showTargets] [--log]
-                     [--threshold THRESHOLD] [--realTransmission]
-                     [--transmissionFile TRANSMISSIONFILE]
+                     [--threshold THRESHOLD] [--transmissionFile TRANSMISSIONFILE]
 ```
 
 Example: Performing recognition every 2.5 seconds, transmitting the recognition
