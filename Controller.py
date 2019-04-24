@@ -32,6 +32,7 @@ def spawnTransmissionSubprocess(command, transmissionSubprocess, message):
         transmissionSubprocess = subprocess.Popen(command + [str(message)], 
             preexec_fn=os.setsid)
     elif system == 'Windows':
+        print (command)
         transmissionSubprocess = subprocess.Popen(command + [str(message)], 
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
     else:
@@ -73,22 +74,16 @@ def main():
         help='log recognition with timestamps')
     parser.add_argument('--threshold', default=0.4, type=float,
         help='threshold for recognition in range [0, 1]')
-    parser.add_argument('--transmissionFile', default='./sender',
+    parser.add_argument('--transmissionFile', 
         help='location of transmission file')
 
     args = parser.parse_args()
     if args.showTargets:
         print ('''
-["person", "bicycle", "car", "motorcycle", "airplane",
-"bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign",
-"parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra",
-"giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard",
-"sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket",
-"bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange",
-"broccoli", "carrot", "hot dog", "pizza", "donot", "cake", "chair", "couch", "potted plant", "bed",
-"dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave",
-"oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair dryer",
-"toothbrush"]
+["background", "aeroplane", "bicycle", "bird", "boat",
+"bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+"sofa", "train", "tvmonitor"]
             ''')
         return
 
@@ -102,7 +97,7 @@ def main():
     transmitDelay = args.transmitDelay
     shouldLog = args.log
     target = args.target
-    threshold = args.threshold * 100
+    threshold = args.threshold
     openCVRed = (0, 0, 255)
     boundingBoxes = []
     DetectionSystem = visionDetection(minimumProbability=threshold,
@@ -121,7 +116,7 @@ def main():
         if currentTime >= lastDetectionTime + detectDelay:
             lastDetectionTime = currentTime
             boundingBoxes.clear()
-            _, detections, newDetectionResult = \
+            detections, newDetectionResult = \
                 DetectionSystem.imageDetect(frame, autoLog=shouldLog)
             for detect in detections:
                 if detect['name'] == target:
