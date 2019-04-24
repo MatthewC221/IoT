@@ -14,12 +14,23 @@ const ttnConfig = {
 
 const twilioConfig = {
     accountSid: 'ACd8d455064f253c4a2e493a29b3213f77',
-    authToken: '912dc7896ae121ca6a13c471f58f78f0'
+    authToken: '912dc7896ae121ca6a13c471f58f78f0',
+    sendingNumber: '+614436433763'
+}
+
+const emailConfig = {
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    user: 'username',
+    pass: 'pasword',
+    sendFrom: `${productConfig.name} <${productConfig.name}@example.com>`
 }
 
 module.exports = {
     productConfig: productConfig,
     ttnConfig: ttnConfig,
     vapidKeys: vapidKeys,
-    twilioConfig: twilioConfig
+    twilioConfig: twilioConfig,
+    emailConfig: emailConfig
 }
