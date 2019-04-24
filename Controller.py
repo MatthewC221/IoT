@@ -15,6 +15,7 @@ from visionDetection import visionDetection
 
 testCommand = ["python", "./printTest.py"] 
 realCommand = ["placeholder", "-m"]
+openCVRed = (0, 0, 255)
 
 # If subprocess is still running, kill and send new data
 def spawnTransmissionSubprocess(command, transmissionSubprocess, message):
@@ -98,7 +99,6 @@ def main():
     shouldLog = args.log
     target = args.target
     threshold = args.threshold
-    openCVRed = (0, 0, 255)
     boundingBoxes = []
     DetectionSystem = visionDetection(minimumProbability=threshold,
         executionPath=visionPath)
