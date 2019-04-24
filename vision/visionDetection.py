@@ -34,18 +34,18 @@ class visionDetection():
         prototxt=os.path.join(executionPath, "MobileNetSSD_deploy.prototxt.txt")
         model=os.path.join(executionPath, "MobileNetSSD_deploy.caffemodel")
         self.detector = cv2.dnn.readNetFromCaffe(prototxt, model)
-	
-	#model parameters
-	self.scaleFactor = 0.007843
-	self.meanRGB = 127.5 # of the model's training dataset
-	self.modelFrameSize = (300, 300) # allowed image size as defined by model
+
+        #model parameters
+        self.scaleFactor = 0.007843
+        self.meanRGB = 127.5 # of the model's training dataset
+        self.modelFrameSize = (300, 300) # allowed image size as defined by model
 
         self.minProb = minimumProbability
 
         self.classes= ["background", "aeroplane", "bicycle", "bird", "boat",
-	                    "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-	                    "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
-	                    "sofa", "train", "tvmonitor"]
+                        "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+                        "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+                        "sofa", "train", "tvmonitor"]
 
         
     ######
@@ -69,11 +69,11 @@ class visionDetection():
 
         # for finding object box_points latter
         (originalHeight, originalWidth) = frame.shape[:2]
-	
-	# preprocess image with mean subtraction and normalization
-	newFrame = cv2.resize(frame, self.modelFrameSize)
+
+        # preprocess image with mean subtraction and normalization
+        newFrame = cv2.resize(frame, self.modelFrameSize)
         detectionParts = cv2.dnn.blobFromImage(newFrame, self.scaleFactor,
-		                        self.modelFrameSize, self.meanRGB)
+                                self.modelFrameSize, self.meanRGB)
 
         # pass image parts for detection and prediction
         self.detector.setInput(detectionParts)
