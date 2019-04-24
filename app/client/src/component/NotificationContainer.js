@@ -1,17 +1,8 @@
 import React, { Component } from 'react';
-import Notification from './Notification';
+import { Notification } from './Notification';
+import '../css/content.css';
 
-class NotificationContainer extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            currentNotif: null
-        }
-
-        this.getInfo = this.getInfo.bind(this);
-        this.handleNotificationClick = this.handleNotificationClick.bind(this);
-    }
+export class NotificationContainer extends Component {
 
     getInfo() {
         const optionsDate = {
@@ -28,43 +19,63 @@ class NotificationContainer extends Component {
             timeZone: 'Australia/Sydney',
             timeZoneName: 'short'};
 
-        const currentNotif = this.state.currentNotif;
+        const selectedNotif = this.props.selectedNotif;
         let markUp = {__html: ''};
 
-        if (currentNotif !== null) {
-
+        if (selectedNotif !== null) {
             markUp.__html = `
-                <b>Date:</b> ${new Intl.DateTimeFormat("en-AU", optionsDate).format(currentNotif.timestamp)}<br>
-                <b>Time:</b> ${new Intl.DateTimeFormat("en-AU", optionsTime).format(currentNotif.timestamp)}<br>
-                <b>Longitude:</b> FAKE<br>
-                <b>Latitude</b> FAKE<br>
-                <b>Device ID:</b> FAKE<br>
-                <b>Message:</b> ${currentNotif.message}`
-        }
+                <table>
+                    <tr>
+                        <th><b>Date:</b></th>
+                        <td>${new Intl.DateTimeFormat("en-AU", optionsDate).format(selectedNotif.timestamp)}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Time:</b></th>
+                        <td>${new Intl.DateTimeFormat("en-AU", optionsTime).format(selectedNotif.timestamp)}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Longitude:</b></th>
+                        <td>FAKE</td>
+                    </tr>
+                    <tr>
+                        <th><b>Latitude:</b></th>
+                        <td>FAKE</td>
+                    </tr>
+                    <tr>
+                        <th><b>Device ID:</b></th>
+                        <td>${selectedNotif.devId}</td>
+                    </tr>
+                    <tr>
+                        <th><b>Message:</b></th>
+                        <td>${selectedNotif.message}</td>
+                    </tr>
+                 </table>
+                 
+                 <div class="action-buttons">
+                    <button class="police-button">Alert Police</button>
+                    <button class="alarm-button">Sound Alarm</button>
+                    <button class="delete-button">Delete</button>
+                </div>`
+            }
         return markUp;
-    }
-
-    handleNotificationClick(notifIndex) {
-        this.setState({
-            currentNotif: this.props.notifications[notifIndex]
-        })
     }
 
     render() {
         const containerStyle = {
             display: "flex",
             flexFlow: "row nowrap",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
         }
 
         const itemStyle = {
             backgroundColor: "#E2D5CA",
-            minHeight: 500,
+            height: 250,
             width: "48%",
+            overflowY: "auto"
         }
 
         const infoStyle = {
-            padding: 10,
+            padding: 10
         }
 
         return (
@@ -72,8 +83,10 @@ class NotificationContainer extends Component {
             
                 <div style={itemStyle}>
                     {
+                        (this.props.isLoading) ?
+                        <div className="loading">Loading...</div> :
                         this.props.notifications.map((entry, index) => (
-                            <div onClick={() => this.handleNotificationClick(index)} key={index}>
+                            <div onClick={() => this.props.onClick(index)} key={index}>
                                 <Notification notification={entry} />
                             </div>
                         ))
@@ -83,9 +96,8 @@ class NotificationContainer extends Component {
                 <div style={itemStyle}>
                     <div style={infoStyle} dangerouslySetInnerHTML={this.getInfo()} />
                 </div>
+
             </div>
         )
     }
 }
-
-export default NotificationContainer;

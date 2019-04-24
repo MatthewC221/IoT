@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import '../css/map.css';
  
 export class MapContainer extends Component {
     render() {
         const mapStyle = {
-            position: "relative",
-            height: 500,
-            width: 300
+            marginTop: 30
         }
 
         const centre = {
@@ -15,16 +14,12 @@ export class MapContainer extends Component {
         }
 
         return (
-        <Map style={mapStyle} initialCenter={centre} google={this.props.google} zoom={15}>
-    
-            <Marker onClick={this.onMarkerClick}
-                    name={'Current location'} />
-    
-            <InfoWindow onClose={this.onInfoWindowClose}>
-                <div>
-                <h1>Hi</h1>
-                </div>
-            </InfoWindow>
+        <Map style={mapStyle} className="map" initialCenter={centre} google={this.props.google} zoom={15}>
+            {
+                this.props.selectedNotif ?
+                <Marker title={`Sighting at ${this.props.selectedNotif.timestamp.toLocaleString()}`} position={{lat: -33.9173, lng: 151.2313}} /> :
+                null
+            }
         </Map>
         );
     }

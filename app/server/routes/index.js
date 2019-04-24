@@ -19,7 +19,9 @@ router.get('/ttn', (req, res) => {
                 console.log(payload.payload_raw.toString())
                 var data = {
                     timestamp: payload.metadata.time,
-                    message: payload.payload_raw.toString()
+                    message: payload.payload_raw.toString(),
+                    devId: payload.dev_id,
+                    read: false
                 };
                 res.json(data);
                 client.close();

@@ -1,46 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import '../css/Notification.css';
 
-class Notification extends Component {
-    constructor(props) {
-        super(props);
+export function Notification(props) {
+    const notif = props.notification;
 
-        this.state = {
-            hover: false,
-            read: false,
-        }
+    let bgColour = "transparent";
+    if (!notif.read) {
+        bgColour = "#BDD299";
+    }
+    // hover colour if re-implementing later: #D1C6B9
 
-        this.handleHover = this.handleHover.bind(this);
-        this.handleClick = this.handleClick.bind(this);
+    const notificationStyle = {
+        backgroundColor: bgColour,
+        padding: 10
     }
 
-    handleHover() {
-        this.setState({hover: !this.state.hover})
-    }
-
-    handleClick() {
-        this.setState({read: !this.state.read});
-    }
-
-    render() {
-        let bgColour = "transparent";
-        if (!this.state.read) {
-            bgColour = "#BDD299";
-        } else if (this.state.hover) {
-            bgColour = "#D1C6B9";
-        }
-
-        const notificationStyle = {
-            backgroundColor: bgColour,
-            padding: 10
-        }
-
-        return (
-            <div className="notification" style={notificationStyle} onClick={this.handleClick} onMouseEnter={this.handleHover} onMouseLeave={this.handleHover}>
-                Sighting at <b>{this.props.notification.timestamp.toLocaleString()}</b>
-            </div>
-        )
-    }
+    return (
+        <div className="notification" style={notificationStyle} >
+            Sighting at <b>{notif.timestamp.toLocaleString()}</b>
+        </div>
+    )
 }
-
-export default Notification;

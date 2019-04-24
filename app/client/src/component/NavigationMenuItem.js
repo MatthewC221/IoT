@@ -15,11 +15,12 @@ class NavigationMenuItem extends Component {
             marginTop: -20,
             marginLeft: 33,
             backgroundColor: "red",
-            width: 14,
-            height: 14,
-            borderRadius: 7,
+            width: 12,
+            height: 12,
+            borderRadius: 6,
+            border: "1px solid white",
             zIndex: 100,
-            visibility: (this.props.value === 'device' && this.props.hasUnreadNotif) ? 'visible' : 'hidden'
+            visibility: (this.props.value === 'device' && this.props.showNotifBubble) ? 'visible' : 'hidden'
         }
 
         return (
