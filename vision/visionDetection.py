@@ -66,6 +66,7 @@ class visionDetection():
     ## detections also logged in detection file if autoLog==True
     ######
     def imageDetect(self, frame, autoLog = False):
+
         # for finding object box_points latter
         (originalHeight, originalWidth) = frame.shape[:2]
 

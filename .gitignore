@@ -1,2 +1,5 @@
 /*/yolo.h5
 /*/__pycache__/*
+**/node_modules/
+**/build/
+**/.vscode/
