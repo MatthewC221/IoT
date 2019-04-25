@@ -128,10 +128,21 @@ void onEvent (ev_t ev) {
 	switch(ev) {
 	case EV_TXCOMPLETE:
 		// message succesfully sent out
-		fprintf(stdout, "1001");  
 		if (LMIC.dataLen) { 
 			// data received in rx slot after tx
 			// not used currently
+		}
+		if (config.use_ack) {
+			if ((LMIC.txrxFlags & TXRX_ACK) != 0) {
+				fprintf(stdout, "1000");
+			}
+			else {
+						
+				fprintf(stdout, "1003");
+			}
+		}
+		else {
+			fprintf(stdout, "1001");  
 		}
 		running = 0;
 		break;
