@@ -6,10 +6,6 @@ class NavigationMenuItem extends Component {
         let imgURL = "/image/" + this.props.img;
         let endpoint = (this.props.value === "home page") ? "/" : `/${this.props.value}`;
 
-        // const iconStyle = {
-        //     zIndex: 0
-        // }
-
         const notifBubbleStyle = {
             position: "absolute",
             marginTop: -20,
@@ -20,7 +16,8 @@ class NavigationMenuItem extends Component {
             borderRadius: 6,
             border: "1px solid white",
             zIndex: 100,
-            visibility: (this.props.value === 'device' && this.props.showNotifBubble) ? 'visible' : 'hidden'
+            visibility: this.props.showNotifBubble ? 'visible' : 'hidden'
+            // visibility: (this.props.value === 'device' && this.props.showNotifBubble) ? 'visible' : 'hidden'
         }
 
         return (

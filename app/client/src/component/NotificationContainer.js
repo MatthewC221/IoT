@@ -25,36 +25,38 @@ export class NotificationContainer extends Component {
         if (selectedNotif !== null) {
             markUp.__html = `
                 <table>
-                    <tr>
-                        <th><b>Date:</b></th>
-                        <td>${new Intl.DateTimeFormat("en-AU", optionsDate).format(selectedNotif.timestamp)}</td>
-                    </tr>
-                    <tr>
-                        <th><b>Time:</b></th>
-                        <td>${new Intl.DateTimeFormat("en-AU", optionsTime).format(selectedNotif.timestamp)}</td>
-                    </tr>
-                    <tr>
-                        <th><b>Longitude:</b></th>
-                        <td>FAKE</td>
-                    </tr>
-                    <tr>
-                        <th><b>Latitude:</b></th>
-                        <td>FAKE</td>
-                    </tr>
-                    <tr>
-                        <th><b>Device ID:</b></th>
-                        <td>${selectedNotif.devId}</td>
-                    </tr>
-                    <tr>
-                        <th><b>Message:</b></th>
-                        <td>${selectedNotif.message}</td>
-                    </tr>
-                 </table>
+                    <tbody>
+                        <tr>
+                            <th><b>Date:</b></th>
+                            <td>${new Intl.DateTimeFormat("en-AU", optionsDate).format(selectedNotif.timestamp)}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Time:</b></th>
+                            <td>${new Intl.DateTimeFormat("en-AU", optionsTime).format(selectedNotif.timestamp)}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Longitude:</b></th>
+                            <td>FAKE</td>
+                        </tr>
+                        <tr>
+                            <th><b>Latitude:</b></th>
+                            <td>FAKE</td>
+                        </tr>
+                        <tr>
+                            <th><b>Device ID:</b></th>
+                            <td>${selectedNotif.devId}</td>
+                        </tr>
+                        <tr>
+                            <th><b>Message:</b></th>
+                            <td>${selectedNotif.message}</td>
+                        </tr>
+                    </tbody>
+                </table>
                  
                  <div class="action-buttons">
                     <button class="police-button">Alert Police</button>
                     <button class="alarm-button">Sound Alarm</button>
-                    <button class="delete-button">Delete</button>
+                    <button class="web-button">Delete</button>
                 </div>`
             }
         return markUp;

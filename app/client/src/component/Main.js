@@ -13,11 +13,31 @@ class Main extends Component {
         super(props);
 
         this.state = {
+            user: config.userProfile,
             notifications: [],
             selectedNotif: null,
             isLoading: false,
             isListening: false
         }
+
+        this.toggleEmailSwitch = this.toggleEmailSwitch.bind(this);
+        this.togglePhoneSwitch = this.togglePhoneSwitch.bind(this);
+    }
+
+    toggleEmailSwitch() {
+        const updatedUser = this.state.user;
+        updatedUser.notif.email = !this.state.user.notif.email;
+        this.setState({
+            user: updatedUser
+        })
+    }
+
+    togglePhoneSwitch() {
+        const updatedUser = this.state.user;
+        updatedUser.notif.phone = !this.state.user.notif.phone;
+        this.setState({
+            user: updatedUser
+        })
     }
 
     hasUnreadNotification() {
@@ -29,7 +49,7 @@ class Main extends Component {
 
     handleNewNotification(notification) {
         let updatedNotifList = this.state.notifications.slice();
-        updatedNotifList.unshift(notification);
+        updatedNotifList.push(notification);
         this.setState({
             notifications: updatedNotifList
         });
@@ -101,8 +121,8 @@ class Main extends Component {
         if (!this.state.isListening) this.getTTNConnection();
 
         return (
-            <BrowserRouter>
-                <div>
+            <div>
+                <BrowserRouter>
                     <NavigationMenu menuItems={config.menuItems} showNotifBubble={this.hasUnreadNotification()} />
                     <div>
                         <Switch>
@@ -115,11 +135,15 @@ class Main extends Component {
                             />} />
                             <Route path="/manage" component={ModuleManager} />
                             <Route path="/store" component={() => <Store modules={config.storeModules} />} />
-                            <Route path="/account" component={AccountManager} />
+                            <Route path="/account" component={() => <AccountManager
+                                user={this.state.user}
+                                toggleEmailSwitch={this.toggleEmailSwitch}
+                                togglePhoneSwitch={this.togglePhoneSwitch}
+                            />} />
                         </Switch>
                     </div>
-                </div>
-            </BrowserRouter>
+                </BrowserRouter>
+            </div>
         )
     }
 }
