@@ -51,22 +51,22 @@ class ModuleStoreItem extends Component {
 
         }
 
-        const hoverStyle = {
-            backgroundColor: "#000000",
-            opacity: 0.6,
-            zIndex: 100,
-            visibility: this.state.hover ? "visible" : "hidden",
-            color: "#ffffff",
-            width: "100%",
-            height: "100%",
-            position: "relative"
-        }
+        // const hoverStyle = {
+        //     backgroundColor: "#000000",
+        //     opacity: 0.6,
+        //     zIndex: 100,
+        //     visibility: this.state.hover ? "visible" : "hidden",
+        //     color: "#ffffff",
+        //     width: "100%",
+        //     height: "100%",
+        //     position: "relative"
+        // }
 
         const imgURL = `image/${this.props.module.img}`;
 
         return (
             <div style={itemContainerStyle} onMouseEnter={this.handleHover} onMouseLeave={this.handleHover}>
-                <img src={imgURL} style={imageStyle} />
+                <img src={imgURL} style={imageStyle} alt={imgURL} />
                 <div style={nameStyle}>{this.props.module.name}</div>
                 <div style={descriptionStyle}>{this.props.module.description}</div>
                 <div style={priceStyle}>${this.props.module.price}/month</div>

@@ -7,7 +7,12 @@ function NavigationMenu(props) {
         <div className="navigation">
             {
                 props.menuItems.map(item => (
-                    <NavigationMenuItem value={item.name} img={item.icon} key={item.name} />
+                    <NavigationMenuItem
+                        value={item.name}
+                        img={item.icon}
+                        key={item.name}
+                        showNotifBubble={props.showNotifBubble}
+                    />
                 ))
             }
         </div>
