@@ -14,7 +14,7 @@ import argparse
 import geocoder
 from visionDetection import visionDetection
 
-testCommand = ["python", "./printTest.py"] 
+testCommand = ["python", "./sendTest.py"] 
 realCommand = ["placeholder", "-m"]
 openCVRed = (0, 0, 255)
 
@@ -98,6 +98,7 @@ def main():
             ''')
         return
 
+    latLong = geocoder.ip("me").latlng          # latLong = [float, float]
     command = testCommand
     if args.transmissionFile:
         command = realCommand
@@ -118,7 +119,11 @@ def main():
     lastDetectionTime = time.time() - detectDelay 
     lastTransmissionTime = time.time() - transmitDelay
     transmissionSubprocess = None
-    latLong = geocoder.ip("me").latlng          # latLong = [float, float]
+    message = {
+        "targets": { 
+        },
+        "loc": latLong
+    }
     while True:
         _, frame = cap.read()
         currentTime = time.time()
@@ -126,9 +131,9 @@ def main():
         if currentTime >= lastDetectionTime + detectDelay:
             lastDetectionTime = currentTime
             boundingBoxes.clear()
-            detections, newDetectionResult = \
+            individualDetections, newDetectionResult = \
                 DetectionSystem.imageDetect(frame, autoLog=shouldLog)
-            for detect in detections:
+            for detect in individualDetections:
                 if detect['name'] == target:
                     boundingBoxes.append(detect['box_points'])
             print ("Recognition objective [{0}]: |detected| = {1}"
@@ -139,12 +144,8 @@ def main():
         if currentTime >= lastTransmissionTime + transmitDelay:
             lastTransmissionTime = currentTime
             if target not in detectionResult: continue
-            message = {
-                "targets": { 
-                    target: detectionResult[target],
-                },
-                "loc": latLong
-            }
+            message["targets"].clear()
+            message["targets"][target] = detectionResult[target]
             transmissionSubprocess = spawnTransmissionSubprocess(command,
                 transmissionSubprocess, message)
             detectionResult.clear()
