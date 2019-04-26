@@ -11,13 +11,23 @@ import time
 import cv2
 import numpy as np
 import argparse
+import geocoder
 from visionDetection import visionDetection
 
-testCommand = ["python", "./printTest.py"] 
+testCommand = ["python", "./sendTest.py"] 
 realCommand = ["placeholder", "-m"]
 openCVRed = (0, 0, 255)
 
-# If subprocess is still running, kill and send new data
+"""
+If subprocess is still running, kill and send new data
+Message is a JSON of the form:
+{
+    "targets": {
+        "target_name": count 
+    },
+    "loc": [latitude, longitude]
+}
+"""
 def spawnTransmissionSubprocess(command, transmissionSubprocess, message):
     system = platform.system()
     if transmissionSubprocess and transmissionSubprocess.poll() is None:
@@ -88,6 +98,7 @@ def main():
             ''')
         return
 
+    latLong = geocoder.ip("me").latlng          # latLong = [float, float]
     command = testCommand
     if args.transmissionFile:
         command = realCommand
@@ -102,13 +113,17 @@ def main():
     boundingBoxes = []
     DetectionSystem = visionDetection(minimumProbability=threshold,
         executionPath=visionPath)
-   
+
     detectionResult = {}
     # Subtract the delays to start tasks immediately
     lastDetectionTime = time.time() - detectDelay 
     lastTransmissionTime = time.time() - transmitDelay
     transmissionSubprocess = None
-
+    message = {
+        "targets": { 
+        },
+        "loc": latLong
+    }
     while True:
         _, frame = cap.read()
         currentTime = time.time()
@@ -116,9 +131,9 @@ def main():
         if currentTime >= lastDetectionTime + detectDelay:
             lastDetectionTime = currentTime
             boundingBoxes.clear()
-            detections, newDetectionResult = \
+            individualDetections, newDetectionResult = \
                 DetectionSystem.imageDetect(frame, autoLog=shouldLog)
-            for detect in detections:
+            for detect in individualDetections:
                 if detect['name'] == target:
                     boundingBoxes.append(detect['box_points'])
             print ("Recognition objective [{0}]: |detected| = {1}"
@@ -128,9 +143,11 @@ def main():
         # Transmission: creates an updated subprocess to send data
         if currentTime >= lastTransmissionTime + transmitDelay:
             lastTransmissionTime = currentTime
-            if len(detectionResult) == 0: continue
+            if target not in detectionResult: continue
+            message["targets"].clear()
+            message["targets"][target] = detectionResult[target]
             transmissionSubprocess = spawnTransmissionSubprocess(command,
-                transmissionSubprocess, detectionResult)
+                transmissionSubprocess, message)
             detectionResult.clear()
 
         for corners in boundingBoxes:
