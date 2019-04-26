@@ -7,4 +7,4 @@ if len(sys.argv) == 2:
         print ("Sending message: " + text)
         time.sleep(1)
 else:
-    print ("Usage: python ./printTest.py <text_to_print>")
+    print ("Usage: python ./sendTest.py <text_to_print>")
