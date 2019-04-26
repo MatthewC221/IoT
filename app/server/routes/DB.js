@@ -16,7 +16,7 @@ router.get('/get', (req, res) => {
                     ID: uplinks[i].ID,
                     timestamp: uplinks[i].timestamp,
                     message: uplinks[i].message,
-                    devID: uplinks[i].devID,
+                    devId: uplinks[i].devId,
                     read: uplinks[i].read
                 }
                 data.push(prep);
