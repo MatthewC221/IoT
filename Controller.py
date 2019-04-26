@@ -144,7 +144,6 @@ def main():
         if currentTime >= lastTransmissionTime + transmitDelay:
             lastTransmissionTime = currentTime
             if target not in detectionResult: continue
-            message["targets"].clear()
             message["targets"][target] = detectionResult[target]
             transmissionSubprocess = spawnTransmissionSubprocess(command,
                 transmissionSubprocess, message)
