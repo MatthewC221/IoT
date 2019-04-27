@@ -4,9 +4,17 @@
  * Module dependencies.
  */
 
+const crypto = require("crypto");
+const { DB_Controller } = require('../db/db_controller');
+var db = new DB_Controller();
+const { notify } = require('../notification/notify')
+var notif = new notify();
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
+var ttn = require('ttn');
+var config = require('../../client/src/config');
+var session = require('../db/session');
 
 /**
  * Get port from environment and store in Express.
@@ -28,6 +36,7 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
 
 /**
  * Normalize a port into a number, string, or false.
@@ -87,4 +96,33 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+}
+
+
+connect_ttn();
+
+function connect_ttn () {
+    ttn.data(config.ttnConfig.appId, config.ttnConfig.accessKey)
+    .then(client => {
+        console.log("server-ttn: connected");
+        return new Promise((resolve, reject) => { 
+            client.on("uplink", (devID, payload) => {
+                console.log("server-ttn: uplink recieved");
+                var data = {
+                    ID: crypto.randomBytes(16).toString("hex"),
+                    timestamp: payload.metadata.time,
+                    message: payload.payload_raw.toString(),
+                    devId: payload.dev_id,
+                    read: false
+                }
+                console.log("server-ttn: sending to client callback")
+                session.dispatch_callback(data);
+                notif.notifyOnTrespasser(data.devId,data.message)
+                db.store_uplink(data, session.user);
+            })
+        })
+    })
+    .catch((err) => {
+        console.log(err)
+   })
 }

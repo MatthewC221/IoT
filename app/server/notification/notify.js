@@ -1,72 +1,104 @@
 var config = require('../../client/src/config');
-var customers = require('/userData.json');
-
+var customers = require('./userData.json');
 const nodemailer = require('nodemailer');
 var twilio = require('twilio')(config.twilioConfig.accountSid, config.twilioConfig.authToken);
 
-let testAccount = nodemailer.createTestAccount();
+class notify {
 
-var formatSubject = 'TRESSPASSER!!!!!'
+    constructor() {
+        this.name = "notify"
+    }
 
-function formatHtmlMessage(message){
-    `<h1>TRESSPASSER!!!!</h1><b>${message}</b>`
-}
+    formatHtmlMessage(modelSubject, message){
+        return `<h1>${modelSubject}</h1><b>${message}</b>`
+    }
 
-function sendSMS(to, message){
-    return twilio.api.messages
-        .create({
-            body: message,
-            to: to,
-            from: config.twilioConfig.sendingNumber,
+    sendSMS(to, subject, message){
+        return twilio.api.messages
+            .create({
+                    body: `${subject}\n\n${message}`,
+                    to: to,
+                    from: config.twilioConfig.sendingNumber,
+                }
+            );
+    };
+
+    sendMail(customer, mailSubject, mailBody, mailBodyhtml){
+
+        let transporter = nodemailer.createTransport({
+            service: config.emailConfig.service,
+            auth: {
+                user: config.emailConfig.user, // generated ethereal user
+                pass: config.emailConfig.pass // generated ethereal password
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        },
+        {
+            from: config.emailConfig.sendFrom
         });
+
+        transporter.sendMail({
+                to: customer,
+                subject: mailSubject,
+                text: mailBody, //plain text
+                html: mailBodyhtml
+        },
+            (error,info)=>{
+
+                if (error){
+                    return console.log(error.message);
+                }
+
+                console.log("Message sent: %s", info.messageId);
+        });
+    };
+
+    notifyOnTrespasser(deviceId,message){
+        //search for device
+        return customers.forEach(function(customer) {
+            customer.devices.forEach(function(device){
+
+                if (device.id === deviceId) {
+                    //get info of model run on device
+                    let model = config.modelMessage[config.modelMessage.findIndex(
+                        model => model.name === device.model)];
+
+                    if (customer.sms) {
+                        notify.prototype.sendSMS(customer.phoneNumber, model.subject, message);
+                    }
+
+                    if (customer.emailMe) {
+                        notify.prototype.sendMail(customer.email, model.subject, message,
+                            notify.prototype.formatHtmlMessage(model.subject, message));
+                    }
+                }
+            });
+        });
+    };
 }
 
-function sendMail(customer, mailSubject, mailBody, mailBodyhtml){
-    let transporter = nodemailer.createTransport({
-        host: config.emailConfig.host,
-        port: config.emailConfig.port,
-        secure: config.emailConfig.secure,
-        //service: "Gmail",
-        auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass // generated ethereal password
-        }
-    });
-
-    transporter.sendMail({
-        from: config.emailConfig.sendFrom,
-        to: customer,
-        subject: mailSubject,
-        text: mailBody, //plain text
-        html: mailBodyhtml
-    }, (error,info));
-
-    console.log("Message sent: %s", info.messageId);
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-}
-
-
-function notifyOnTrespasser(deviceId,message){
-    customers.forEach(function(customers) {
-        if (customers.device.includes(deviceId)){
-            sendSMS(customers.phoneNumber,message);
-            sendMail(customers.email,formatSubject,message,formatHtmlMessage(message));
-        }
-    });
-}
-
+module.exports = {
+    notify
+};
 /*
-EXAMPLE:
-        this.sendMail(
+
+
+EXAMPLES:
+notif = new notify();
+notif.notifyOnTrespasser('testing_device','Hi!')
+notif.sendMail(
             'Cust_Cattle@example.com',
-            formatSubject,
-            payload.payload_raw.toString(),
-            formatHtmlMessage(payload.payload_raw.toString())
+            'Subject',
+            'payload',
+            notif.formatHtmlMessage('testing_device','payload')
         )
 
-        this.sendSMS(
-            +61468440474,
-            '${formatSubject}\n${payload.payload_raw.toString()}'
+notif.sendSMS(
+            '+61468440474',
+            '${Subject}\n${payload}'
         )
 
 */
+

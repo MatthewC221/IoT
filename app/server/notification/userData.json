@@ -1,26 +1,57 @@
 [
   {
-    "phoneNumber": "+15557778888",
-    "email": "Hugo@Agri-vision.com",
     "name": "Hugo",
-    "device": ["******"]
+    "phoneNumber": "+852933313165",
+    "email": "Hugo@Agri-vision.com",
+    "sms": false,
+    "emailMe": false,
+    "devices": [
+      {"id": "testing_device", "model": "human"},
+      {"id": "contol", "model": "pestID"}
+    ]
   },
   {
+    "name": "Jace",
     "phoneNumber": "+61468440474",
     "email": "kibaov@gmail.com",
-    "name": "Jace",
-    "device": ["******"]
+    "sms": false,
+    "emailMe": true,
+    "devices": [
+      {"id": "testing_device", "model": "human"},
+      {"id": "anima", "model": "animalCount"}
+    ]
   },
   {
-    "phoneNumber": "+14447778888",
-    "email": "Mich@Agri-vision.com",
-    "name": "Mich",
-    "device": ["******"]
-  },
-  {
-    "phoneNumber": "+14447778888",
-    "email": "Matt@Agri-vision.com",
     "name": "Matt",
-    "device": ["******"]
+    "phoneNumber": "+61424082585",
+    "email": "Matt@Agri-vision.com",
+    "sms": false,
+    "emailMe": false,
+    "devices": [
+      {"id": "testing_device", "model": "human"},
+      {"id": "car", "model": "vehicleID"}
+    ]
+  },
+  {
+    "name": "Max",
+    "phoneNumber": "+61402829421",
+    "email": "Max@Agri-vision.com",
+    "sms": false,
+    "emailMe": false,
+    "devices": [
+      {"id": "testing_device", "model": "human"},
+      {"id": "ranger", "model": "human"}
+    ]
+  },
+  {
+    "name": "Mich",
+    "phoneNumber": "+61420314485",
+    "email": "Mich@Agri-vision.com",
+    "sms": false,
+    "emailMe": false,
+    "devices": [
+      {"id": "testing_device", "model": "human"},
+      {"id": "animals", "model": "animalCount"}
+    ]
   }
 ]

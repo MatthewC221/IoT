@@ -1,16 +1,35 @@
+const path = require('path');
+require('dotenv').config({path: path.resolve(__dirname,'../../server/.env')});
+
 const productConfig = {
     name: 'Agri-Vision'
-}
+};
 
 const ttnConfig = {
-    appId: 'comp6324_8_testing',
-    accessKey: 'ttn-account-v2.kwfGp5IlnhPua5xrHsF9PeIH6LyWyPMKXGOgP7oVZ88'
-}
+    appId: process.env.AGRI_TTN,
+    accessKey: process.env.AGRI_KEY
+};
 
 const twilioConfig = {
-    accountSid: 'ACd8d455064f253c4a2e493a29b3213f77',
-    authToken: '912dc7896ae121ca6a13c471f58f78f0'
-}
+    accountSid: process.env.AGRI_SID,
+    authToken: process.env.AGRI_TOKEN,
+    sendingNumber: process.env.AGRI_NUM
+};
+
+const emailConfig = {
+    service: 'Gmail',
+    user: process.env.AGRI_USER,
+    pass: process.env.AGRI_PASS,
+    sendFrom: 'Agri-Vision <G8@AgriVision.com>'
+};
+
+
+const modelMessage = [
+    {name: 'human', subject: 'TRESPSSER!!!!'},
+    {name: 'animalCount', subject: 'Number of animals seen'},
+    {name: 'pestID', subject: 'FERAL of animal seen'},
+    {name: 'vehicleID', subject: 'Vehicle Spotted!'}
+];
 
 const menuItems = [
     {name: "home page", icon: "home_heart.png"},
@@ -39,7 +58,7 @@ const storeModules = [
         description: "Identify vehicles by model, make, colour and number plate.",
         price: 500
     }
-]
+];
 
 const memberProfiles = [
     {
@@ -67,15 +86,15 @@ const memberProfiles = [
         description: "Self-proclaimed nerd. Sorry not sorry.",
         img: "michelle.jpg"
     }
-]
-
-
+];
 
 module.exports = {
     productConfig: productConfig,
     ttnConfig: ttnConfig,
     twilioConfig: twilioConfig,
+    emailConfig: emailConfig,
     menuItems: menuItems,
     storeModules: storeModules,
-    memberProfiles: memberProfiles
-}
+    memberProfiles: memberProfiles,
+    modelMessage: modelMessage
+};
