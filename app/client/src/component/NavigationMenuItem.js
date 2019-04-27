@@ -13,7 +13,7 @@ class NavigationMenuItem extends Component {
             backgroundColor: "red",
             width: 12,
             height: 12,
-            borderRadius: 6,
+            borderRadius: 12,
             border: "1px solid white",
             zIndex: 100,
             visibility: this.props.showNotifBubble ? 'visible' : 'hidden'

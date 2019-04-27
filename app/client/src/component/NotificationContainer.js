@@ -70,19 +70,19 @@ export class NotificationContainer extends Component {
                                         <td>{new Intl.DateTimeFormat("en-AU", optionsTime).format(this.props.selectedNotif.timestamp)}</td>
                                     </tr>
                                     <tr>
-                                        <th><b>Longitude:</b></th>
-                                        <td>FAKE</td>
+                                        <th><b>Latitude:</b></th>
+                                        <td>{this.props.selectedNotif.lat}</td>
                                     </tr>
                                     <tr>
-                                        <th><b>Latitude:</b></th>
-                                        <td>FAKE</td>
+                                        <th><b>Longitude:</b></th>
+                                        <td>{this.props.selectedNotif.long}</td>
                                     </tr>
                                     <tr>
                                         <th><b>Device ID:</b></th>
                                         <td>{this.props.selectedNotif.devId}</td>
                                     </tr>
                                     <tr>
-                                        <th><b>Message:</b></th>
+                                        <th><b>Objects Detected:</b></th>
                                         <td>{this.props.selectedNotif.message}</td>
                                     </tr>
                                 </tbody>

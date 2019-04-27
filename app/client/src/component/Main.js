@@ -42,7 +42,7 @@ class Main extends Component {
 
     handleNewNotification(notification) {
         let updatedNotifList = this.state.notifications.slice();
-        updatedNotifList.push(notification);
+        updatedNotifList.unshift(notification);
         this.setState({
             notifications: updatedNotifList
         });
@@ -119,6 +119,8 @@ class Main extends Component {
                     prep.push({
                         ID: msgs[i].ID,
                         timestamp: new Date(msgs[i].timestamp),
+                        long: msgs[i].long,
+                        lat: msgs[i].lat,
                         message: msgs[i].message,
                         devId: (msgs[i].devId === undefined) ? "2D6349IO2" : msgs[i].devId,
                         read: (msgs[i].read === undefined) ? false : msgs[i].read 
@@ -152,6 +154,8 @@ class Main extends Component {
                 this.handleNewNotification({
                     ID: payload.ID,
                     timestamp: new Date(payload.timestamp),
+                    long: payload.long,
+                    lat: payload.lat,
                     message: payload.message,
                     devId: payload.devId,
                     read: false

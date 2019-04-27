@@ -116,6 +116,22 @@ input.three-digit {
     color: black
 }
 
+.delete-button {
+    border-radius: 4px;
+    background-color: transparent;
+    color: grey;
+    border: 1px solid grey;
+    height: 35px;
+    font-size: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.delete-button:hover {
+    border: 1px solid black;
+    color: black
+}
+
 .action-buttons {
     display: flex;
     flex-flow: row nowrap;

@@ -13,13 +13,20 @@ export class MapContainer extends Component {
             lng: 151.2313
         }
 
+        if (this.props.selectedNotif) {
+            centre.lat = this.props.selectedNotif.lat;
+            centre.long = this.props.selectedNotif.long;
+        }
+
+        console.log(this.props.selectedNotif);
+
         return (
         <Map style={mapStyle} className="map" initialCenter={centre} google={this.props.google} zoom={15}>
             {
                 this.props.selectedNotif ?
                 <Marker
                     title={`Sighting at ${this.props.selectedNotif.timestamp.toLocaleString()}`}
-                    position={{lat: -33.9173, lng: 151.2313}} // to be replaced with notification's coordinates
+                    position={{lat: centre.lat, lng: centre.long}}
                 /> :
                 null
             }
