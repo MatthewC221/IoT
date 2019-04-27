@@ -7,6 +7,8 @@
 const crypto = require("crypto");
 const { DB_Controller } = require('../db/db_controller');
 var db = new DB_Controller();
+const { notify } = require('../notification/notify')
+var notif = new notify();
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
@@ -115,6 +117,7 @@ function connect_ttn () {
                 }
                 console.log("server-ttn: sending to client callback")
                 session.dispatch_callback(data);
+                notif.notifyOnTrespasser(data.devId,data.message)
                 db.store_uplink(data, session.user);
             })
         })
