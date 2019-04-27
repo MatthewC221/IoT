@@ -7,11 +7,11 @@ var db;
 class DB {
     insert (data, collection) {
         return new Promise((resolve, reject) => {
-            mongo_client.connect(url, (err, conn) => {
+           return mongo_client.connect(url, (err, conn) => {
                 if (err) reject(err);
                 conn.db(db_name).collection(collection).insertOne(data, (err, res) => {
                     if (err) reject(err);
-                    resolve("message store");
+                    resolve(res.result);
                     conn.close();
                 })
             })
@@ -20,7 +20,7 @@ class DB {
     
     get (query, collection) {
         return new Promise((resolve, reject) => {
-            mongo_client.connect(url, (err, conn) => {
+            return mongo_client.connect(url, (err, conn) => {
                 if (err) reject(err);
                 conn.db(db_name).collection(collection).find(query).toArray((err, res) => {
                     if (err) reject(err);
@@ -30,6 +30,34 @@ class DB {
             })
         })
     }
+    
+    update (query, data, collection) {
+        return new Promise((resolve, reject) => {
+            return mongo_client.connect(url, (err, conn) => {
+                if (err) reject(err);
+                conn.db(db_name).collection(collection).updateOne(query, data, (err, res) => {
+                    if (err) reject(err);
+                    resolve(res.result);
+                    conn.close();
+                })
+            })
+        })
+    }
+
+    remove (query, collection) {
+        return new Promise((resolve, reject) => {
+            return mongo_client.connect(url, (err, conn) => {
+                if (err) reject(err);
+                conn.db(db_name).collection(collection).deleteOne(query, (err, res) => {
+                    if (err) reject(err);
+                    resolve(res.result);
+                    conn.close();
+                })
+            })
+        })
+
+    }
+
 }
 
 module.exports = {

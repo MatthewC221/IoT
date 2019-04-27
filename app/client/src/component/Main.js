@@ -40,13 +40,6 @@ class Main extends Component {
         })
     }
 
-    hasUnreadNotification() {
-        for (let notification of this.state.notifications) {
-            if (!notification.read) return true;
-        }
-        return false;
-    }
-
     handleNewNotification(notification) {
         let updatedNotifList = this.state.notifications.slice();
         updatedNotifList.push(notification);
@@ -55,23 +48,76 @@ class Main extends Component {
         });
     }
 
-    handleNotificationClick(i) {
-        let updatedNotifList = this.state.notifications.slice();
-        updatedNotifList[i].read = true;
-        this.setState({
-            notifications: updatedNotifList,
-            selectedNotif: updatedNotifList[i]
+    handleDeleteNotif(ID) {
+        var data = {ID: ID};
+        fetch('/DB/remove', {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
         })
+            .then((res) => {
+                console.log("notif deleted")
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        var updatedNotifications = this.state.notifications.filter((notif) => {
+            return notif.ID !== ID;
+        })
+        this.setState({
+            notifications: updatedNotifications,
+            selectedNotif: null
+        });
+    }
+
+    hasUnreadNotification() {
+        for (let notification of this.state.notifications) {
+            if (!notification.read) return true;
+        }
+        return false;
+    }
+
+    handleNotificationClick(i, ID) {
+        let updatedNotifList = this.state.notifications.slice();
+        //only update with db if the notif hasnt been read before
+        if (!updatedNotifList[i].read) {
+            updatedNotifList[i].read = true;
+            this.setState({
+                notifications: updatedNotifList,
+                selectedNotif: updatedNotifList[i]
+            })
+            var data = {
+                ID: ID,
+                read: true
+            }
+            fetch('/DB/read', {
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            })
+                .then((res) => {
+                    console.log("read updated")
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+        else {
+            this.setState({
+                selectedNotif: updatedNotifList[i]
+            })
+        }
     }
 
     getStoredMessages() {
         this.setState({isLoading: true});
-        fetch('/DBget')
+        fetch('/DB/get')
             .then(res => res.json())
             .then(msgs => {
                 var prep = [];
                 for (var i = 0; i < msgs.length; ++i) {
                     prep.push({
+                        ID: msgs[i].ID,
                         timestamp: new Date(msgs[i].timestamp),
                         message: msgs[i].message,
                         devId: (msgs[i].devId === undefined) ? "2D6349IO2" : msgs[i].devId,
@@ -96,20 +142,26 @@ class Main extends Component {
     }
 
     getTTNConnection() {
-        this.setState({isListening: true});
-        fetch('/ttn')
-        .then(res => res.json())
-        .then(payload => {
-            console.log(payload);
-            this.handleNewNotification({ 
-                timestamp: new Date(payload.timestamp),
-                message: payload.message,
-                devId: payload.devId,
-                read: false
+        if(!this.state.isListening){
+            console.log("listening to ttn")
+            this.setState({isListening: true});
+            fetch('/ttn')
+            .then(res => res.json())
+            .then(payload => {
+                console.log(payload);
+                this.handleNewNotification({
+                    ID: payload.ID,
+                    timestamp: new Date(payload.timestamp),
+                    message: payload.message,
+                    devId: payload.devId,
+                    read: false
+                })
+                this.setState({isListening: false});
             })
-            this.setState({isListening: false});
-        })
-        .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+            });
+        }
     };
 
     componentDidMount() {
@@ -118,11 +170,11 @@ class Main extends Component {
 
     render() {
         // produces a warning because updating state from within render
-        if (!this.state.isListening) this.getTTNConnection();
+        this.getTTNConnection();
 
         return (
-            <div>
-                <BrowserRouter>
+            <BrowserRouter>
+                <div>
                     <NavigationMenu menuItems={config.menuItems} showNotifBubble={this.hasUnreadNotification()} />
                     <div>
                         <Switch>
@@ -130,7 +182,8 @@ class Main extends Component {
                             <Route path="/device" component={() => <CameraManager
                                 notifications={this.state.notifications}
                                 selectedNotif={this.state.selectedNotif}
-                                onClick={(i) => this.handleNotificationClick(i)}
+                                onClick={(i, ID) => this.handleNotificationClick(i, ID)}
+                                onDelete={(ID) => this.handleDeleteNotif(ID)}
                                 isLoading={this.state.isLoading}
                             />} />
                             <Route path="/manage" component={ModuleManager} />
@@ -142,8 +195,8 @@ class Main extends Component {
                             />} />
                         </Switch>
                     </div>
-                </BrowserRouter>
-            </div>
+                </div>
+            </BrowserRouter>
         )
     }
 }

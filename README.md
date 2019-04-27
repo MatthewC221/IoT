@@ -4,7 +4,10 @@
 The Controller is the control-point for performing recognition objectives
 and sending the output to the transmission unit.
 
-To run the modules individually, see the READMEs in the subdirectories.
+To run the modules individually, see the following subdirectories.
+- /app for web-application
+- /transmission_unit for transmission unit
+- /vision for vision unit
 
 ```
 usage: Controller.py [-h] [--detectDelay DETECTDELAY]

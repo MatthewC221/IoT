@@ -14,7 +14,9 @@ modified based on https://github.com/ernstdevreede/lmic_pi exmaple "thethingsnet
 `./sender -h`
 
 ### output(stdout)
+- 1000   => message succesfully sent out and acked
 - 1001   => successfully sent out
 - 1002   => message length too large
+- 1003   => message succesfully sent out but not acked
 - 1007   => max runtime reached
 - others => woops, unexpected errors
