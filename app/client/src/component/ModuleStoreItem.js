@@ -5,15 +5,27 @@ class ModuleStoreItem extends Component {
     constructor(props) {
         super(props);
 
+        this.subscribed = this.props.module.price === 0;
+
         this.state = {
-            hover: false
+            hover: false,
         }
 
         this.handleHover = this.handleHover.bind(this);
+        this.handleSubscribe = this.handleSubscribe.bind(this);
     }
 
     handleHover() {
         this.setState({hover: !this.state.hover});
+    }
+
+    handleSubscribe() {
+        if (!this.subscribed) {
+            document.getElementById(`subscribe-button-${this.props.module.name}`).innerHTML = `You are now subscribed!`;
+        } else {
+            document.getElementById(`subscribe-button-${this.props.module.name}`).innerHTML = `You have unsubscribed`;
+        }
+        this.subscribed = !this.subscribed;
     }
 
     renderOverlay() {
@@ -49,8 +61,8 @@ class ModuleStoreItem extends Component {
 
         return (
             <div style={hoverStyle}>
-                <div style={buttonStyle}>
-                    {this.props.module.price === 0 ? "Unsubscribe from Module" : "Subscribe to Module"}
+                <div style={buttonStyle} id={`subscribe-button-${this.props.module.name}`} onClick={this.handleSubscribe}>
+                    {this.subscribed ? "Unsubscribe from Module" : "Subscribe to Module"}
                 </div>
             </div>
         )

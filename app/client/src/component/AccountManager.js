@@ -11,6 +11,12 @@ class AccountManager extends Component {
         this.state = {
             isEditMode: false,
         }
+
+        this.handleNameChange = this.handleNameChange.bind(this);
+    }
+
+    handleNameChange(event) {
+        this.user.name = event.target.value;
     }
 
     renderButton() {
@@ -24,9 +30,9 @@ class AccountManager extends Component {
 
         return (
             <button
-            className="web-button"
-            style={{fontSize: 20}}
-            onClick={() => this.setState({isEditMode: newState})}>{buttonMessage}</button>
+                className="web-button"
+                style={{fontSize: 20}}
+                onClick={() => this.setState({isEditMode: newState})}>{buttonMessage}</button>
         )
     }
     
@@ -68,19 +74,19 @@ class AccountManager extends Component {
                     <tbody>
                         <tr>
                             <th>Name</th>
-                            <td><input type="text" name="name" value={this.user.name} readOnly /></td>
+                            <td><input type="text" name="name" defaultValue={this.user.name} onChange={this.handleNameChange}/></td>
                         </tr>
                         <tr>
                             <th>Email</th>
-                            <td><input type="text" name="email" value={this.user.email} readOnly /></td>
+                            <td><input type="text" name="email" defaultValue={this.user.email} readOnly /></td>
                         </tr>
                         <tr>
                             <th>Contact Phone</th>
-                            <td><input type="text" name="phone" value={numberWithSpaces} readOnly /></td>
+                            <td><input type="text" name="phone" defaultValue={numberWithSpaces} readOnly /></td>
                         </tr>
                         <tr>
                             <th>Password</th>
-                            <td><input type="password" name="name" value={this.user.password} readOnly /></td>
+                            <td><input type="password" name="name" defaultValue={this.user.password} readOnly /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -114,7 +120,7 @@ class AccountManager extends Component {
         const numberWithSpaces = `${number.slice(0,4)} ${number.slice(4,8)} ${number.slice(8,12)} ${number.slice(-4)}`;
 
         return (
-            <form>
+            <form id="billing">
                 <table>
                     <tbody>
                         <tr>
