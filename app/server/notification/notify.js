@@ -16,11 +16,15 @@ class notify {
     sendSMS(to, subject, message){
         return twilio.api.messages
             .create({
-                    body: `${subject}\n\n${message}`,
-                    to: to,
-                    from: config.twilioConfig.sendingNumber,
-                }
-            );
+                body: `${subject}\n\n${message}`,
+                to: to,
+                from: config.twilioConfig.sendingNumber,
+            }).then(function(data) {
+                console.log('Customer notified');
+            }).catch(function(err) {
+                console.error('Could not notify customer');
+                console.error(err);
+            });
     };
 
     sendMail(customer, mailSubject, mailBody, mailBodyhtml){
@@ -65,11 +69,11 @@ class notify {
                     let model = config.modelMessage[config.modelMessage.findIndex(
                         model => model.name === device.model)];
 
-                    if (customer.sms) {
+                    if (customer.notif.sms) {
                         notify.prototype.sendSMS(customer.phoneNumber, model.subject, message);
                     }
 
-                    if (customer.emailMe) {
+                    if (customer.notif.email) {
                         notify.prototype.sendMail(customer.email, model.subject, message,
                             notify.prototype.formatHtmlMessage(model.subject, message));
                     }
@@ -82,13 +86,13 @@ class notify {
 module.exports = {
     notify
 };
-/*
 
 
-EXAMPLES:
+
+//EXAMPLES:
 notif = new notify();
 notif.notifyOnTrespasser('testing_device','Hi!')
-notif.sendMail(
+/*notif.sendMail(
             'Cust_Cattle@example.com',
             'Subject',
             'payload',
