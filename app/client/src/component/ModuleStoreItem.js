@@ -8,7 +8,7 @@ class ModuleStoreItem extends Component {
         this.subscribed = this.props.module.price === 0;
 
         this.state = {
-            hover: false,
+            hover: false
         }
 
         this.handleHover = this.handleHover.bind(this);

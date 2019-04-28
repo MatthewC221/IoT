@@ -17,7 +17,6 @@ class NavigationMenuItem extends Component {
             border: "1px solid white",
             zIndex: 100,
             visibility: this.props.showNotifBubble ? 'visible' : 'hidden'
-            // visibility: (this.props.value === 'device' && this.props.showNotifBubble) ? 'visible' : 'hidden'
         }
 
         return (
