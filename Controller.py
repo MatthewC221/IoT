@@ -20,12 +20,12 @@ openCVRed = (0, 0, 255)
 
 """
 If subprocess is still running, kill and send new data
-Message is a JSON of the form:
+Message is a JSON of the form: (t = targets, l = location)
 {
-    "targets": {
+    "t": {
         "target_name": count 
     },
-    "loc": [latitude, longitude]
+    "l": [latitude, longitude]
 }
 """
 def spawnTransmissionSubprocess(command, transmissionSubprocess, message):
@@ -120,9 +120,9 @@ def main():
     lastTransmissionTime = time.time() - transmitDelay
     transmissionSubprocess = None
     message = {
-        "targets": { 
+        "t": { 
         },
-        "loc": latLong
+        "l": latLong
     }
     while True:
         _, frame = cap.read()
@@ -144,7 +144,7 @@ def main():
         if currentTime >= lastTransmissionTime + transmitDelay:
             lastTransmissionTime = currentTime
             if target not in detectionResult: continue
-            message["targets"][target] = detectionResult[target]
+            message["t"][target] = detectionResult[target]
             transmissionSubprocess = spawnTransmissionSubprocess(command,
                 transmissionSubprocess, message)
             detectionResult.clear()
