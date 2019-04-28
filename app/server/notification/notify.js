@@ -1,20 +1,14 @@
 var config = require('../../client/src/config');
-var customers = require('./userData.json');
 const nodemailer = require('nodemailer');
 var twilio = require('twilio')(config.twilioConfig.accountSid, config.twilioConfig.authToken);
 
-class notify {
+class Notification_Dispatcher {
 
-
-    formatHtmlMessage(modelSubject, message){
-        return `<h1>${modelSubject}</h1><b>${message}</b>`
-    }
-
-    sendSMS(to, subject, message){
+    static sendSMS(customer, subject, message){
         return twilio.api.messages
             .create({
                 body: `${subject}\n\n${message}`,
-                to: to,
+                to: customer,
                 from: config.twilioConfig.sendingNumber,
             }).then(function(data) {
                 console.log('Customer notified');
@@ -24,7 +18,7 @@ class notify {
             });
     };
 
-    sendMail(customer, mailSubject, mailBody, mailBodyhtml){
+    static sendMail(customer, mailSubject, mailBody, mailBodyhtml){
 
         let transporter = nodemailer.createTransport({
             service: config.emailConfig.service,
@@ -37,7 +31,7 @@ class notify {
             }
         },
         {
-            from: config.emailConfig.sendFrom
+            from: config.emailConfig.sendingEmail
         });
 
         transporter.sendMail({
@@ -58,7 +52,7 @@ class notify {
 
     notifyOnTrespasser(deviceId,message){
         //search for device
-        return customers.forEach(function(customer) {
+        return config.userProfile.forEach(function(customer) {
             customer.devices.forEach(function(device){
 
                 if (device.id === deviceId) {
@@ -66,13 +60,13 @@ class notify {
                     let model = config.modelMessage[config.modelMessage.findIndex(
                         model => model.name === device.model)];
 
-                    if (customer.notif.sms) {
-                        notify.prototype.sendSMS(customer.phoneNumber, model.subject, message);
+                    if (customer.notif.phone) {
+                        Notification_Dispatcher.sendSMS(customer.phone, model.subject, message);
                     }
 
                     if (customer.notif.email) {
-                        notify.prototype.sendMail(customer.email, model.subject, message,
-                            notify.prototype.formatHtmlMessage(model.subject, message));
+                        let htmlMessage = `<h1>${model.subject}</h1><b>${message}</b>`;
+                        Notification_Dispatcher.sendMail(customer.email, model.subject, message, htmlMessage);
                     }
                 }
             });
@@ -80,7 +74,7 @@ class notify {
     };
 }
 
-module.exports = {
-    notify
-};
 
+module.exports = {
+    Notification_Dispatcher
+};

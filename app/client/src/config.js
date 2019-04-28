@@ -20,7 +20,7 @@ const emailConfig = {
     service: 'Gmail',
     user: process.env.AGRI_USER,
     pass: process.env.AGRI_PASS,
-    sendFrom: 'Agri-Vision <G8@AgriVision.com>'
+    sendingEmail: 'Agri-Vision <G8@AgriVision.com>'
 };
 
 
@@ -88,6 +88,130 @@ const memberProfiles = [
     }
 ];
 
+const userProfile = [
+    {
+        name: "Jane Smith",
+        email: "jane@gmail.com",
+        phone: "+61412345678",
+        password: "password",
+        billing: {
+            number: "0123456789012345",
+            expMonth: 12,
+            expYear: 20,
+            cvv: 123
+        },
+        notif: {
+            email: false,
+            phone: false
+        },
+        devices: [
+            {id: "trespass", model: "human"},
+            {id: "vehicleRecon", model: "vehicleID"}
+        ]
+    },
+    {
+        name: "Hugo",
+        email: "Hugo@Agri-vision.com",
+        phone: "+852933313165",
+        password: "password",
+        notif: {
+            email: false,
+            phone: false
+        },
+        billing: {
+            number: "9012345012345678",
+            expMonth: 10,
+            expYear: 22,
+            cvv: 321
+        },
+        devices: [
+            {id: "testing_device", model: "human"},
+            {id: "contol", model: "pestID"}
+        ]
+    },
+    {
+        name: "Jace",
+        email: "kibaov@gmail.com",
+        phone: "+61468440474",
+        password: "password",
+        notif: {
+            email: true,
+            phone: false
+        },
+        billing: {
+            number: "5678901234012345",
+            expMonth: 11,
+            expYear: 21,
+            cvv: 132
+        },
+        devices: [
+            {id: "testing_device", model: "human"},
+            {id: "anima", model: "animalCount"}
+        ]
+    },
+    {
+        name: "Matt",
+        email: "Matt@Agri-vision.com",
+        phone: "+61424082585",
+        password: "password",
+        notif: {
+            email: false,
+            phone: false
+        },
+        billing: {
+            number: "0456789123012345",
+            expMonth: 12,
+            expYear: 20,
+            cvv: 231
+        },
+        devices: [
+            {id: "testing_device", model: "human"},
+            {id: "car", model: "vehicleID"}
+        ]
+    },
+    {
+        name: "Max",
+        email: "Max@Agri-vision.com",
+        phone: "+61402829421",
+        password: "password",
+        notif: {
+            email: false,
+            phone: false
+        },
+        billing: {
+            number: "0123123456789045",
+            expMonth: 12,
+            expYear: 22,
+            cvv: 321
+        },
+        devices: [
+            {id: "testing_device", model: "human"},
+            {id: "ranger", model: "human"}
+        ]
+    },
+    {
+        name: "Mich",
+        email: "Mich@Agri-vision.com",
+        phone: "+61420314485",
+        password: "password",
+        notif: {
+            email: false,
+            phone: false
+        },
+        billing: {
+            number: "0123450123456789",
+            expMonth: 12,
+            expYear: 20,
+            cvv: 213
+        },
+        devices: [
+            {id: "testing_device", model: "human"},
+            {id: "animals", model: "animalCount"}
+        ]
+    }
+    ];
+
+
 module.exports = {
     productConfig: productConfig,
     ttnConfig: ttnConfig,
@@ -96,5 +220,6 @@ module.exports = {
     menuItems: menuItems,
     storeModules: storeModules,
     memberProfiles: memberProfiles,
-    modelMessage: modelMessage
+    modelMessage: modelMessage,
+    userProfile: userProfile
 };

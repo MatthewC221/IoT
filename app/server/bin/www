@@ -7,8 +7,8 @@
 const crypto = require("crypto");
 const { DB_Controller } = require('../db/db_controller');
 var db = new DB_Controller();
-const { notify } = require('../notification/notify')
-var notif = new notify();
+const { Notification_Dispatcher } = require('../notification/notify')
+var notif = new Notification_Dispatcher();
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
