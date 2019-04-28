@@ -25,9 +25,9 @@ const emailConfig = {
 
 
 const modelMessage = [
-    {name: 'human', subject: 'TRESPSSER!!!!'},
+    {name: 'human', subject: 'TRESPASSER!!!!'},
     {name: 'animalCount', subject: 'Number of animals seen'},
-    {name: 'pestID', subject: 'FERAL of animal seen'},
+    {name: 'pestID', subject: 'FERAL SPOTTED!!!'},
     {name: 'vehicleID', subject: 'Vehicle Spotted!'}
 ];
 

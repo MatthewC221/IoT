@@ -105,7 +105,7 @@ function connect_ttn () {
     ttn.data(config.ttnConfig.appId, config.ttnConfig.accessKey)
     .then(client => {
         console.log("server-ttn: connected");
-        return new Promise((resolve, reject) => { 
+        return new Promise((resolve, reject) => {
             client.on("uplink", (devID, payload) => {
                 console.log("server-ttn: uplink recieved");
                 var data = {
@@ -117,7 +117,7 @@ function connect_ttn () {
                 }
                 console.log("server-ttn: sending to client callback")
                 session.dispatch_callback(data);
-                notif.notifyOnTrespasser(data.devId,data.message)
+                notif.notifyOnTrespasser(data.devId, data.message);
                 db.store_uplink(data, session.user);
             })
         })

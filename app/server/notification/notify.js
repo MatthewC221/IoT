@@ -5,9 +5,6 @@ var twilio = require('twilio')(config.twilioConfig.accountSid, config.twilioConf
 
 class notify {
 
-    constructor() {
-        this.name = "notify"
-    }
 
     formatHtmlMessage(modelSubject, message){
         return `<h1>${modelSubject}</h1><b>${message}</b>`
@@ -86,23 +83,4 @@ class notify {
 module.exports = {
     notify
 };
-
-
-
-//EXAMPLES:
-notif = new notify();
-notif.notifyOnTrespasser('testing_device','Hi!')
-/*notif.sendMail(
-            'Cust_Cattle@example.com',
-            'Subject',
-            'payload',
-            notif.formatHtmlMessage('testing_device','payload')
-        )
-
-notif.sendSMS(
-            '+61468440474',
-            '${Subject}\n${payload}'
-        )
-
-*/
 
