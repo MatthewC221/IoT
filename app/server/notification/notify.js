@@ -4,7 +4,13 @@ var twilio = require('twilio')(config.twilioConfig.accountSid, config.twilioConf
 
 class Notification_Dispatcher {
 
-    static sendSMS(customer, subject, message){
+    constructor(){
+        Notification_Dispatcher.sendMail = this.sendMail.bind(this);
+        Notification_Dispatcher.sendSMS = this.sendSMS.bind(this);
+        Notification_Dispatcher.notifyOnTrespasser = this.notifyOnTrespasser.bind(this)
+    }
+
+    sendSMS(customer, subject, message){
         return twilio.api.messages
             .create({
                 body: `${subject}\n\n${message}`,
@@ -18,7 +24,7 @@ class Notification_Dispatcher {
             });
     };
 
-    static sendMail(customer, mailSubject, mailBody, mailBodyhtml){
+    sendMail(customer, mailSubject, mailBody, mailBodyhtml){
 
         let transporter = nodemailer.createTransport({
             service: config.emailConfig.service,
@@ -52,7 +58,7 @@ class Notification_Dispatcher {
 
     notifyOnTrespasser(deviceId,message){
         //search for device
-        return config.userProfile.forEach(function(customer) {
+        return config.customerData.forEach(function(customer) {
             customer.devices.forEach(function(device){
 
                 if (device.id === deviceId) {
