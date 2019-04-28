@@ -80,7 +80,6 @@ class Notification_Dispatcher {
     };
 }
 
-
 module.exports = {
     Notification_Dispatcher
 };
