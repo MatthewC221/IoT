@@ -20,26 +20,50 @@ const menuItems = [
     {name: "account", icon: "key.png"}
 ];
 
-const storeModules = [
-    {
-        name: 'Animal Count',
-        img: 'duck.png',
-        description: "Count the number of animals within the camera's vision by species.",
-        price: 400
-    },
-    {
-        name: 'Animal Identification',
-        img: 'cow.png',
-        description: "Identify animals by species.",
-        price: 200
-    },
-    {
-        name: 'Vehicle Identification',
-        img: 'pickup-truck.png',
-        description: "Identify vehicles by model, make, colour and number plate.",
-        price: 500
-    }
-]
+const storeModules = {
+    security: [
+        {
+            name: 'Human Recognition',
+            img: 'farmer.png',
+            description: "Receive alerts when one or more humans are within the camera's vision.",
+            price: 0
+        },
+        {
+            name: 'Vehicle Identification',
+            img: 'pickup-truck.png',
+            description: "Identify vehicles by model, make, colour and number plate.",
+            price: 500
+        },
+        {
+            name: 'Pest Recognition',
+            img: 'scarecrow.png',
+            description: "Receive alerts when a known pest or feral animal is within the camera's vision.",
+            price: 350
+        },
+    ],
+    livestock: [
+        {
+            name: 'Animal Count',
+            img: 'duck.png',
+            description: "Count the number of animals within the camera's vision by species.",
+            price: 400
+        },
+        {
+            name: 'Cattle Behaviour',
+            img: 'cow.png',
+            description: "Monitor cattle behaviour and receive alerts when stress indicators are high.",
+            price: 500
+        }
+    ],
+    crop: [
+        {
+            name: 'Crop Monitoring',
+            img: 'wheat.png',
+            description: "Monitor crop growth and receive alerts when harvest indicators are high.",
+            price: 375
+        }
+    ]
+}
 
 const memberProfiles = [
     {
@@ -69,11 +93,29 @@ const memberProfiles = [
     }
 ]
 
+const userProfile = {
+    name: "Jane Smith",
+    email: "jane@gmail.com",
+    phone: "0412345678",
+    password: "password",
+    billing: {
+        number: "0123456789012345",
+        expMonth: 12,
+        expYear: 20,
+        cvv: 123
+    },
+    notif: {
+        email: false,
+        phone: true
+    }
+}
+
 module.exports = {
     productConfig: productConfig,
     ttnConfig: ttnConfig,
     twilioConfig: twilioConfig,
     menuItems: menuItems,
     storeModules: storeModules,
-    memberProfiles: memberProfiles
+    memberProfiles: memberProfiles,
+    userProfile: userProfile
 }
