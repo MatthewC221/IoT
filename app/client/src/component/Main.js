@@ -13,11 +13,39 @@ class Main extends Component {
         super(props);
 
         this.state = {
+            user: config.userProfile,
             notifications: [],
             selectedNotif: null,
             isLoading: false,
             isListening: false
         }
+
+        this.toggleEmailSwitch = this.toggleEmailSwitch.bind(this);
+        this.togglePhoneSwitch = this.togglePhoneSwitch.bind(this);
+    }
+
+    toggleEmailSwitch() {
+        const updatedUser = this.state.user;
+        updatedUser.notif.email = !this.state.user.notif.email;
+        this.setState({
+            user: updatedUser
+        })
+    }
+
+    togglePhoneSwitch() {
+        const updatedUser = this.state.user;
+        updatedUser.notif.phone = !this.state.user.notif.phone;
+        this.setState({
+            user: updatedUser
+        })
+    }
+
+    handleNewNotification(notification) {
+        let updatedNotifList = this.state.notifications.slice();
+        updatedNotifList.unshift(notification);
+        this.setState({
+            notifications: updatedNotifList
+        });
     }
 
     handleDeleteNotif(ID) {
@@ -47,14 +75,6 @@ class Main extends Component {
             if (!notification.read) return true;
         }
         return false;
-    }
-
-    handleNewNotification(notification) {
-        let updatedNotifList = this.state.notifications.slice();
-        updatedNotifList.unshift(notification);
-        this.setState({
-            notifications: updatedNotifList
-        });
     }
 
     handleNotificationClick(i, ID) {
@@ -99,6 +119,8 @@ class Main extends Component {
                     prep.push({
                         ID: msgs[i].ID,
                         timestamp: new Date(msgs[i].timestamp),
+                        long: msgs[i].long,
+                        lat: msgs[i].lat,
                         message: msgs[i].message,
                         devId: (msgs[i].devId === undefined) ? "2D6349IO2" : msgs[i].devId,
                         read: (msgs[i].read === undefined) ? false : msgs[i].read 
@@ -132,6 +154,8 @@ class Main extends Component {
                 this.handleNewNotification({
                     ID: payload.ID,
                     timestamp: new Date(payload.timestamp),
+                    long: payload.long,
+                    lat: payload.lat,
                     message: payload.message,
                     devId: payload.devId,
                     read: false
@@ -168,7 +192,11 @@ class Main extends Component {
                             />} />
                             <Route path="/manage" component={ModuleManager} />
                             <Route path="/store" component={() => <Store modules={config.storeModules} />} />
-                            <Route path="/account" component={AccountManager} />
+                            <Route path="/account" component={() => <AccountManager
+                                user={this.state.user}
+                                toggleEmailSwitch={this.toggleEmailSwitch}
+                                togglePhoneSwitch={this.togglePhoneSwitch}
+                            />} />
                         </Switch>
                     </div>
                 </div>

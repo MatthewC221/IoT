@@ -108,13 +108,21 @@ function connect_ttn () {
         return new Promise((resolve, reject) => {
             client.on("uplink", (devID, payload) => {
                 console.log("server-ttn: uplink recieved");
-                var data = {
-                    ID: crypto.randomBytes(16).toString("hex"),
-                    timestamp: payload.metadata.time,
-                    message: payload.payload_raw.toString(),
-                    devId: payload.dev_id,
-                    read: false
+                let payloadData = payload.payload_raw.toString().match(/-?\d+(\.?\d+)?/g);
+
+                let data = {
+                  ID: crypto.randomBytes(16).toString("hex"),
+                  timestamp: payload.metadata.time,
+                  lat: payloadData[1],
+                  long: payloadData[2],
+                  message: (payloadData[0] > 1) ? `${payloadData[0]} people` : "1 person",
+                  devId: devID,
+                  read: false
                 }
+
+                console.log("lat", data.lat);
+                console.log("long", data.long);
+                
                 console.log("server-ttn: sending to client callback")
                 session.dispatch_callback(data);
                 notif.notifyOnTrespasser(data.devId, data.message);

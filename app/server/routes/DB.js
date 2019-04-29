@@ -16,6 +16,8 @@ router.get('/get', (req, res) => {
                     ID: uplinks[i].ID,
                     timestamp: uplinks[i].timestamp,
                     message: uplinks[i].message,
+                    long: uplinks[i].long,
+                    lat: uplinks[i].lat,
                     devId: uplinks[i].devId,
                     read: uplinks[i].read
                 }

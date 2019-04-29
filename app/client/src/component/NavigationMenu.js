@@ -11,7 +11,7 @@ function NavigationMenu(props) {
                         value={item.name}
                         img={item.icon}
                         key={item.name}
-                        showNotifBubble={props.showNotifBubble}
+                        showNotifBubble={item.name === 'device' && props.showNotifBubble}
                     />
                 ))
             }

@@ -4,6 +4,12 @@ import config from '../config';
 import '../css/content.css';
 
 export function Home(props) {
+    const memberProfileContainerStyle = {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+    }
+
     return (
         <div className="content">
             <h1>{config.productConfig.name}</h1>
@@ -15,7 +21,7 @@ export function Home(props) {
             <div className="section">
                 With the guidance of Max Girault of Fleet Space Technologies, we are Computer Science and Software Engineering students at the University of New South Wales, Australia.
             </div>
-            <div className="flex-box-horizontal">
+            <div style={memberProfileContainerStyle}>
                 {
                     props.profiles.map((entry, index) => (
                         <MemberProfile profile={entry} key={index} />
